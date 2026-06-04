@@ -1,0 +1,1873 @@
+<!DOCTYPE html><html lang="en"><head>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>Atlantic — Editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Dark surface stack, matching screenshot */
+    --bg-0:#0a0a0a;          /* page */
+    --bg-1:#0f0f0f;          /* chrome */
+    --bg-2:#141414;          /* panels / canvas frame */
+    --bg-3:#1a1a1a;          /* cards */
+    --bg-4:#222222;          /* hover / chips */
+    --bg-5:#2a2a2a;          /* input */
+    --line-1:#1f1f1f;
+    --line-2:#272727;
+    --line-3:#333333;
+    --ink-0:#ffffff;
+    --ink-1:#e6e6e6;
+    --ink-2:#a8a8a8;
+    --ink-3:#707070;
+    --ink-4:#4a4a4a;
+    --brand:#4f7cf7;         /* "Design" accent (blue from ref) */
+    --brand-2:#3d62d1;
+    --pos:#3ecf8e;           /* green */
+    --neg:#ef6b6b;           /* red */
+    --warn:#d4a73a;
+    --publish:#ffffff;
+
+    --font-ui:'Geist', system-ui, -apple-system, sans-serif;
+    --font-mono:'Geist Mono', ui-monospace, monospace;
+
+    --r-sm:6px;
+    --r-md:8px;
+    --r-lg:10px;
+    --r-xl:14px;
+  }
+
+  /* Light */
+  body.light{
+    --bg-0:#f5f4f0;
+    --bg-1:#ffffff;
+    --bg-2:#fafaf7;
+    --bg-3:#ffffff;
+    --bg-4:#ececec;
+    --bg-5:#f3f3f3;
+    --line-1:#eaeaea;
+    --line-2:#e0e0e0;
+    --line-3:#cfcfcf;
+    --ink-0:#0a0a0a;
+    --ink-1:#1a1a1a;
+    --ink-2:#4a4a4a;
+    --ink-3:#7a7a7a;
+    --ink-4:#b0b0b0;
+    --publish:#0a0a0a;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg-0);color:var(--ink-1);font-family:var(--font-ui);-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11"}
+  body{min-width:1440px;font-size:13px;letter-spacing:-0.005em}
+
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+
+  /* ========= TOP CHROME (global bar) ========= */
+  .app{
+    display:flex;flex-direction:column;height:100vh;min-height:780px;
+    background:var(--bg-0);
+  }
+
+  .menubar{
+    height:40px;flex:0 0 40px;
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+    padding:0 14px;
+    background:var(--bg-1);
+    border-bottom:1px solid var(--line-1);
+  }
+  .menubar-left{display:flex;align-items:center;gap:14px}
+  .menubar-right{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+  .brand{
+    display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;letter-spacing:-0.01em;color:var(--ink-0);
+  }
+  .brand .logo{
+    width:16px;height:16px;border-radius:4px;
+    background:conic-gradient(from 210deg at 50% 50%, #5a7ff7, #8f5ff7, #f75fa5, #5a7ff7);
+    box-shadow:inset 0 0 0 1.5px var(--bg-1);
+  }
+  .breadcrumbs{display:flex;align-items:center;gap:6px;color:var(--ink-3);font-size:12px}
+  .breadcrumbs .sep{color:var(--ink-4)}
+  .breadcrumbs .cur{color:var(--ink-1)}
+  .project-pill{
+    display:inline-flex;align-items:center;gap:6px;
+    height:24px;padding:0 10px;border-radius:14px;
+    background:var(--bg-3);border:1px solid var(--line-2);
+    font-size:12px;color:var(--ink-1);
+  }
+  .project-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--pos)}
+
+  .deck-tabs{display:flex;gap:2px;background:var(--bg-2);padding:3px;border-radius:var(--r-sm);border:1px solid var(--line-1)}
+  .deck-tab{
+    padding:4px 10px;font-size:11.5px;color:var(--ink-3);border-radius:4px;
+    display:flex;align-items:center;gap:6px;white-space:nowrap;
+  }
+  .deck-tab:hover{color:var(--ink-1)}
+  .deck-tab.active{background:var(--bg-4);color:var(--ink-0)}
+  .deck-tab .idx{font-family:var(--font-mono);font-size:10px;color:var(--ink-4)}
+  .deck-tab.active .idx{color:var(--ink-2)}
+
+  .icon-btn{
+    width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;
+    border-radius:var(--r-sm);color:var(--ink-2);
+  }
+  .icon-btn:hover{background:var(--bg-3);color:var(--ink-1)}
+  .icon-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+  .publish-btn{
+    height:28px;padding:0 14px;border-radius:var(--r-sm);
+    background:var(--publish);color:var(--bg-0);
+    font-size:12.5px;font-weight:500;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  body.light .publish-btn{color:#fff}
+  .publish-btn:hover{opacity:.9}
+
+  /* ========= WORKSPACE ========= */
+  .workspace{
+    flex:1;min-height:0;
+    display:grid;
+    grid-template-columns:48px 260px 1fr 280px;
+    background:var(--bg-0);
+  }
+  body.swap-panels .workspace{grid-template-columns:48px 280px 1fr 260px}
+
+  /* ---- Icon rail ---- */
+  .rail{
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    padding:10px 0;background:var(--bg-1);border-right:1px solid var(--line-1);
+  }
+  .rail .tool{
+    width:32px;height:32px;border-radius:var(--r-sm);
+    display:flex;align-items:center;justify-content:center;color:var(--ink-3);
+  }
+  .rail .tool:hover{background:var(--bg-3);color:var(--ink-1)}
+  .rail .tool.active{background:var(--bg-4);color:var(--ink-0)}
+  .rail .tool.active .dot{position:absolute}
+  .rail .tool svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .rail .sep{width:20px;height:1px;background:var(--line-2);margin:6px 0}
+
+  /* ---- Left panel (Layers) ---- */
+  .panel{
+    background:var(--bg-1);
+    border-right:1px solid var(--line-1);
+    display:flex;flex-direction:column;min-height:0;
+  }
+  .panel-right{border-right:none;border-left:1px solid var(--line-1)}
+
+  .panel-head{
+    height:40px;flex:0 0 40px;
+    padding:0 14px;display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--line-1);
+  }
+  .panel-title{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-3);font-weight:500}
+  .panel-badge{
+    font-size:10px;padding:2px 8px;border-radius:10px;
+    background:rgba(79,124,247,0.12);color:var(--brand);
+    border:1px solid rgba(79,124,247,0.24);
+    font-weight:500;letter-spacing:0.02em;
+  }
+
+  .search{
+    margin:10px;padding:6px 10px;display:flex;align-items:center;gap:8px;
+    background:var(--bg-2);border:1px solid var(--line-1);border-radius:var(--r-sm);
+    color:var(--ink-3);font-size:12px;
+  }
+  .search svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.6}
+  .search input{
+    flex:1;background:transparent;border:none;outline:none;color:var(--ink-1);font:inherit;
+  }
+  .search input::placeholder{color:var(--ink-3)}
+
+  .tree{padding:2px 6px 14px;overflow:auto}
+  .tree-row{
+    display:flex;align-items:center;gap:6px;height:26px;padding:0 8px;border-radius:var(--r-sm);
+    font-size:12.5px;color:var(--ink-2);cursor:pointer;user-select:none;
+  }
+  .tree-row:hover{background:var(--bg-3);color:var(--ink-1)}
+  .tree-row.sel{background:rgba(79,124,247,0.14);color:#e8eeff;box-shadow:inset 0 0 0 1px rgba(79,124,247,0.35)}
+  .tree-row .caret{width:10px;color:var(--ink-4);font-size:10px;display:inline-flex;justify-content:center}
+  .tree-row .caret svg{width:8px;height:8px;fill:currentColor}
+  .tree-row.child{padding-left:22px}
+  .tree-row.child2{padding-left:38px}
+  .tree-row .ico{width:14px;height:14px;display:inline-flex;align-items:center;justify-content:center;color:var(--ink-3)}
+  .tree-row .ico svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.4}
+  .tree-row.sel .ico{color:#b7c5ff}
+
+  .tree-section-title{
+    font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-4);
+    padding:12px 14px 6px;font-weight:500;
+  }
+
+  /* ---- Center (URL bar + canvas) ---- */
+  .center{
+    display:flex;flex-direction:column;min-width:0;min-height:0;
+    background:var(--bg-0);
+  }
+  .urlbar-row{
+    height:40px;flex:0 0 40px;
+    display:flex;align-items:center;gap:6px;padding:0 14px;
+    border-bottom:1px solid var(--line-1);background:var(--bg-1);
+  }
+  .nav-btns{display:flex;gap:2px}
+  .url{
+    flex:1;height:26px;
+    background:var(--bg-2);border:1px solid var(--line-2);border-radius:var(--r-sm);
+    display:flex;align-items:center;gap:8px;padding:0 10px;
+    font-family:var(--font-mono);font-size:11px;color:var(--ink-2);
+  }
+  .url .lock{color:var(--ink-3)}
+  .url .path{color:var(--ink-1)}
+
+  .canvas{
+    flex:1;min-height:0;overflow:auto;
+    background:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 0) 0 0 / 24px 24px,
+      var(--bg-0);
+    padding:28px 36px 40px;
+  }
+  body.light .canvas{
+    background:
+      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.06) 1px, transparent 0) 0 0 / 24px 24px,
+      var(--bg-0);
+  }
+
+  /* ---- Preview artboard (the "dashboard" from screenshot) ---- */
+  .artboard-label{
+    display:flex;align-items:center;gap:10px;margin-bottom:10px;
+    font-family:var(--font-mono);font-size:11px;color:var(--ink-3);
+  }
+  .artboard-label .chip{
+    padding:2px 8px;border-radius:10px;background:var(--bg-3);border:1px solid var(--line-2);color:var(--ink-2);
+  }
+
+  .artboard{
+    background:var(--bg-1);
+    border:1px solid var(--line-2);
+    border-radius:var(--r-xl);
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4), 0 2px 6px rgba(0,0,0,0.3);
+  }
+  body.light .artboard{box-shadow:0 20px 60px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04)}
+
+  .ab-head{
+    padding:28px 32px 20px;
+    display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+  }
+  .ab-head h1{margin:0;font-size:26px;font-weight:600;letter-spacing:-0.02em;color:var(--ink-0);line-height:1.15}
+  .ab-head .sub{margin-top:6px;color:var(--ink-3);font-size:13px}
+  .ab-head .actions{display:flex;gap:8px}
+  .btn{
+    height:32px;padding:0 14px;border-radius:var(--r-sm);font-size:12.5px;font-weight:500;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .btn-ghost{background:var(--bg-3);color:var(--ink-1);border:1px solid var(--line-2)}
+  .btn-ghost:hover{background:var(--bg-4)}
+  .btn-primary{background:var(--ink-0);color:var(--bg-0)}
+  body.light .btn-primary{background:var(--ink-0);color:#fff}
+
+  .selection-ring{position:relative}
+  .selection-ring::before{
+    content:"";position:absolute;inset:-6px;border:1.5px solid var(--brand);border-radius:10px;pointer-events:none;
+    box-shadow:0 0 0 2px rgba(79,124,247,0.18);
+  }
+  .selection-ring::after{
+    content:"Logo";
+    position:absolute;left:0;top:-22px;
+    background:var(--brand);color:#fff;font-size:10px;font-weight:500;
+    padding:2px 6px;border-radius:3px;font-family:var(--font-mono);
+  }
+
+  /* stats row */
+  .stats{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:0 32px 22px;
+  }
+  .stat{
+    background:var(--bg-2);border:1px solid var(--line-2);border-radius:var(--r-lg);
+    padding:18px 18px 16px;position:relative;min-height:116px;display:flex;flex-direction:column;gap:8px;
+  }
+  .stat .row{display:flex;align-items:center;justify-content:space-between;color:var(--ink-3);font-size:12px}
+  .stat .ico{
+    width:28px;height:28px;border-radius:8px;background:var(--bg-3);border:1px solid var(--line-2);
+    display:flex;align-items:center;justify-content:center;color:var(--ink-2);
+  }
+  .stat .ico svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6}
+  .stat .val{font-size:26px;font-weight:600;color:var(--ink-0);letter-spacing:-0.02em;line-height:1}
+  .stat .delta{font-size:11.5px;display:flex;align-items:center;gap:4px;margin-top:auto}
+  .stat .delta.up{color:var(--pos)}
+  .stat .delta.down{color:var(--neg)}
+  .stat .delta svg{width:10px;height:10px;fill:currentColor}
+  .stat .delta .muted{color:var(--ink-3)}
+
+  /* transactions card */
+  .tx-card{
+    margin:0 32px 32px;
+    background:var(--bg-2);border:1px solid var(--line-2);border-radius:var(--r-lg);
+    padding:20px 22px 8px;
+  }
+  .tx-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .tx-head h3{margin:0;font-size:15px;font-weight:600;color:var(--ink-0);letter-spacing:-0.01em}
+  .tx-head a{color:var(--ink-2);font-size:12px;text-decoration:none}
+  .tx-head a:hover{color:var(--ink-0)}
+
+  .tbl{width:100%;border-collapse:collapse}
+  .tbl th{
+    text-align:left;font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;
+    color:var(--ink-3);padding:10px 8px;border-bottom:1px solid var(--line-2);
+  }
+  .tbl td{padding:14px 8px;border-bottom:1px solid var(--line-1);font-size:13px;color:var(--ink-1)}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl .inv{font-family:var(--font-mono);color:var(--ink-2);font-size:12px}
+  .tbl .cust{font-weight:500}
+  .tbl .amt{font-variant-numeric:tabular-nums;font-weight:500}
+
+  .badge{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:3px 9px;border-radius:10px;font-size:11px;font-weight:500;
+    border:1px solid transparent;
+  }
+  .badge::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
+  .badge.paid{background:rgba(62,207,142,0.1);color:var(--pos);border-color:rgba(62,207,142,0.22)}
+  .badge.pend{background:rgba(212,167,58,0.12);color:var(--warn);border-color:rgba(212,167,58,0.25)}
+  .badge.over{background:rgba(239,107,107,0.1);color:var(--neg);border-color:rgba(239,107,107,0.24)}
+
+  /* ---- Right panel (Properties) ---- */
+  .props{padding:10px 14px 24px;overflow:auto}
+  .prop-selected{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 10px;background:var(--bg-2);border:1px solid var(--line-2);
+    border-radius:var(--r-sm);margin-bottom:14px;
+  }
+  .prop-selected .name{font-size:12.5px;font-weight:500}
+  .prop-selected .kind{font-family:var(--font-mono);font-size:10.5px;color:var(--ink-3)}
+
+  .prop-seg{
+    display:flex;background:var(--bg-2);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:2px;
+    margin-bottom:14px;
+  }
+  .prop-seg span{
+    flex:1;text-align:center;font-size:11.5px;padding:5px;border-radius:4px;color:var(--ink-3);cursor:pointer;
+  }
+  .prop-seg span.on{background:var(--bg-4);color:var(--ink-0)}
+
+  .prop-group{margin-bottom:18px}
+  .prop-group h5{
+    margin:0 0 8px;font-size:10.5px;text-transform:uppercase;letter-spacing:0.08em;
+    color:var(--ink-3);font-weight:500;
+  }
+  .field{
+    display:flex;align-items:center;gap:8px;margin-bottom:6px;
+  }
+  .field .lbl{width:42px;font-size:11px;color:var(--ink-3)}
+  .input{
+    flex:1;height:28px;padding:0 10px;
+    background:var(--bg-2);border:1px solid var(--line-2);border-radius:var(--r-sm);
+    font-family:var(--font-mono);font-size:11.5px;color:var(--ink-1);
+    display:flex;align-items:center;
+  }
+  .input input{all:unset;flex:1;width:100%;font:inherit;color:inherit}
+  .input .suffix{color:var(--ink-3);font-size:10.5px}
+  .field-pair{display:flex;gap:6px}
+  .field-pair .input{flex:1}
+
+  .swatch-row{display:flex;gap:6px;align-items:center}
+  .swatch{
+    width:24px;height:24px;border-radius:5px;border:1px solid var(--line-2);
+  }
+
+  .collapse-divider{
+    height:1px;background:var(--line-1);margin:18px 0;
+  }
+
+  /* ========= TAB SHELL FOR EXTRA VARIATIONS ========= */
+  .variations-bar{
+    position:fixed;right:20px;bottom:20px;z-index:100;
+    background:var(--bg-1);border:1px solid var(--line-2);border-radius:999px;padding:4px;
+    display:flex;gap:2px;box-shadow:0 8px 28px rgba(0,0,0,0.45);
+  }
+  .variations-bar button{
+    padding:6px 12px;border-radius:999px;font-size:11.5px;color:var(--ink-3);
+  }
+  .variations-bar button:hover{color:var(--ink-1)}
+  .variations-bar button.active{background:var(--bg-4);color:var(--ink-0)}
+  .variations-bar .label{font-size:10px;color:var(--ink-4);padding:0 8px 0 10px;align-self:center;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.1em}
+
+  /* ========= CODE VIEW (variation) ========= */
+  .code-split{
+    flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line-1);
+  }
+  .pane-col{display:flex;flex-direction:column;min-height:0}
+  .pane-col + .pane-col{border-left:1px solid var(--line-1)}
+  .pane-top{
+    height:36px;flex:0 0 36px;display:flex;align-items:center;gap:12px;
+    padding:0 14px;border-bottom:1px solid var(--line-1);background:var(--bg-1);
+  }
+  .pane-top .crumbs{font-family:var(--font-mono);font-size:11px;color:var(--ink-2)}
+  .pane-top .crumbs .sl{color:var(--ink-4);margin:0 4px}
+  .pane-top .right{margin-left:auto;display:flex;gap:2px}
+  .tgt{
+    padding:3px 8px;font-size:10.5px;font-family:var(--font-mono);color:var(--ink-3);
+    border-radius:4px;
+  }
+  .tgt.on{background:var(--bg-4);color:var(--ink-0)}
+
+  .code{
+    flex:1;overflow:auto;padding:16px 0 16px 0;background:var(--bg-0);
+    font-family:var(--font-mono);font-size:12px;line-height:1.75;
+    display:flex;
+  }
+  .code .gutter{
+    padding:0 10px 0 14px;color:var(--ink-4);user-select:none;text-align:right;font-size:11px;
+  }
+  .code pre{margin:0;color:var(--ink-1);white-space:pre;padding-right:16px}
+  .code .kw{color:#c792ea}
+  .code .tag{color:#89ddff}
+  .code .attr{color:#82aaff}
+  .code .str{color:#c3e88d}
+  .code .cmt{color:var(--ink-4);font-style:italic}
+  .code .fn{color:#ffcb6b}
+  .code .hl{background:rgba(79,124,247,0.12);display:inline-block;width:100%}
+
+  .mini-preview{
+    flex:1;overflow:auto;padding:20px;background:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 0) 0 0 / 20px 20px,
+      var(--bg-0);
+  }
+  .mini-frame{
+    background:var(--bg-1);border:1px solid var(--line-2);border-radius:var(--r-lg);overflow:hidden;height:100%;min-height:420px;
+    display:flex;flex-direction:column;
+  }
+  .mini-frame .mf-head{padding:18px 20px;border-bottom:1px solid var(--line-1)}
+  .mini-frame .mf-head h4{margin:0;font-size:16px;font-weight:600}
+  .mini-frame .mf-head p{margin:4px 0 0;color:var(--ink-3);font-size:11px}
+  .mini-frame .mf-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px}
+  .mini-frame .ms{background:var(--bg-2);border:1px solid var(--line-2);border-radius:8px;padding:10px}
+  .mini-frame .ms .l{font-size:9px;color:var(--ink-3);text-transform:uppercase;letter-spacing:0.08em}
+  .mini-frame .ms .v{font-size:15px;font-weight:600;margin-top:4px}
+  .mini-frame .ms.sel{outline:1.5px solid var(--brand);outline-offset:2px}
+
+  /* ========= BACKEND SHELL ========= */
+  .backend-workspace{
+    flex:1;min-height:0;
+    display:grid;grid-template-columns:48px 320px 1fr 300px;
+  }
+
+  /* Backend - toggles */
+  .feat-list{padding:10px;overflow:auto}
+  .feat{
+    display:grid;grid-template-columns:36px 1fr 34px;gap:12px;align-items:center;
+    padding:12px;border:1px solid var(--line-2);border-radius:var(--r-md);
+    background:var(--bg-2);margin-bottom:8px;cursor:pointer;transition:.12s;
+  }
+  .feat:hover{border-color:var(--line-3);background:var(--bg-3)}
+  .feat.on{border-color:rgba(79,124,247,0.4);background:rgba(79,124,247,0.06)}
+  .feat .ico-b{
+    width:36px;height:36px;border-radius:8px;background:var(--bg-3);border:1px solid var(--line-2);
+    display:flex;align-items:center;justify-content:center;color:var(--ink-2);
+  }
+  .feat.on .ico-b{background:rgba(79,124,247,0.14);border-color:rgba(79,124,247,0.35);color:#b7c5ff}
+  .feat .ico-b svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6}
+  .feat .ttl{font-size:13px;font-weight:500;color:var(--ink-0);margin-bottom:2px}
+  .feat .dsc{font-size:11px;color:var(--ink-3)}
+  .switch{
+    width:30px;height:18px;border-radius:10px;background:var(--bg-4);border:1px solid var(--line-3);position:relative;transition:.15s;
+  }
+  .switch::after{
+    content:"";position:absolute;top:1px;left:1px;width:14px;height:14px;border-radius:50%;
+    background:var(--ink-2);transition:.15s;
+  }
+  .feat.on .switch{background:var(--brand);border-color:var(--brand)}
+  .feat.on .switch::after{left:13px;background:#fff}
+
+  .feat-main{padding:24px 28px;overflow:auto}
+  .feat-main h2{margin:0 0 4px;font-size:20px;font-weight:600;letter-spacing:-0.01em}
+  .feat-main .subcopy{color:var(--ink-3);font-size:13px;margin-bottom:22px}
+  .gen-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+  .gen-card{
+    background:var(--bg-2);border:1px solid var(--line-2);border-radius:var(--r-md);padding:14px;
+  }
+  .gen-card .tag{font-family:var(--font-mono);font-size:10px;color:var(--brand);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em}
+  .gen-card .name{font-family:var(--font-mono);font-size:13px;color:var(--ink-0);font-weight:500}
+  .gen-card .exp{font-size:11.5px;color:var(--ink-3);margin-top:6px;line-height:1.5}
+  .next-box{
+    background:var(--bg-2);border:1px dashed var(--line-3);border-radius:var(--r-md);padding:14px 16px;
+  }
+  .next-box h5{margin:0 0 8px;font-size:12px;font-weight:600;color:var(--ink-1)}
+  .next-box ol{margin:0;padding-left:18px;color:var(--ink-2);font-size:12px;line-height:1.8}
+
+  /* Backend - blocks canvas */
+  .blocks-canvas{
+    flex:1;position:relative;overflow:hidden;
+    background:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 0) 0 0 / 20px 20px,
+      var(--bg-0);
+  }
+  .phone{
+    position:absolute;left:50%;top:50%;transform:translate(-60%,-50%);
+    width:300px;height:560px;background:var(--bg-1);
+    border-radius:32px;border:2px solid var(--line-3);padding:20px;
+    display:flex;flex-direction:column;gap:10px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.5);
+  }
+  .phone-notch{width:100px;height:18px;background:var(--bg-0);border-radius:12px;align-self:center}
+  .tier{background:var(--bg-2);border:1px solid var(--line-2);border-radius:var(--r-md);padding:14px}
+  .tier.pro{background:rgba(79,124,247,0.08);border-color:rgba(79,124,247,0.3)}
+  .tier .tag-s{font-size:9px;color:var(--ink-3);letter-spacing:0.08em;text-transform:uppercase;font-weight:500}
+  .tier .price{font-size:20px;font-weight:600;margin-top:4px;color:var(--ink-0)}
+  .tier .price small{font-size:10px;color:var(--ink-3);font-weight:400}
+  .tier .d{font-size:10.5px;color:var(--ink-3);margin-top:4px}
+  .up-btn{
+    margin-top:10px;height:34px;background:var(--brand);color:#fff;border-radius:var(--r-sm);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;position:relative;
+  }
+  .up-btn .bound{
+    position:absolute;top:-10px;right:-8px;
+    background:var(--bg-1);border:1px solid rgba(79,124,247,0.5);color:#b7c5ff;
+    font-family:var(--font-mono);font-size:9px;padding:2px 6px;border-radius:10px;
+    display:flex;align-items:center;gap:4px;
+  }
+  .up-btn .bound::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--brand)}
+
+  .tray{
+    position:absolute;right:28px;top:28px;width:260px;
+    background:var(--bg-1);border:1px solid var(--line-2);border-radius:var(--r-lg);
+    padding:14px;box-shadow:0 20px 40px rgba(0,0,0,0.4);
+  }
+  .tray h4{margin:0 0 4px;font-size:13px;font-weight:600}
+  .tray .tray-sub{font-size:11px;color:var(--ink-3);margin-bottom:12px}
+  .tray .section-lbl{font-size:9.5px;color:var(--ink-4);letter-spacing:0.08em;text-transform:uppercase;margin:10px 0 6px;font-weight:500}
+  .block-item{
+    display:flex;align-items:center;gap:8px;padding:7px 10px;
+    background:var(--bg-2);border:1px solid var(--line-2);border-radius:6px;
+    font-family:var(--font-mono);font-size:11px;color:var(--ink-1);
+    margin-bottom:4px;cursor:grab;
+  }
+  .block-item:hover{background:var(--bg-3);border-color:var(--line-3)}
+  .block-item .grip{color:var(--ink-4);font-size:10px}
+  .block-item.drag{box-shadow:0 8px 20px rgba(0,0,0,0.4);transform:rotate(-2deg);border-color:var(--brand)}
+  .block-item .bi{
+    width:16px;height:16px;border-radius:4px;background:rgba(79,124,247,0.14);color:#b7c5ff;
+    display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;
+  }
+
+  /* Node graph */
+  .graph{
+    flex:1;position:relative;overflow:auto;padding-bottom:76px;
+    background:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0) 0 0 / 22px 22px,
+      var(--bg-0);
+  }
+  .graph-inner{
+    position:relative;width:1420px;height:760px;
+  }
+  .node{
+    position:absolute;background:var(--bg-1);border:1px solid var(--line-2);border-radius:var(--r-md);
+    min-width:180px;box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  }
+  .node.sel{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand),0 8px 24px rgba(0,0,0,0.35)}
+  .node-head{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:8px 12px;border-bottom:1px solid var(--line-1);font-size:12px;font-weight:500;
+  }
+  .node-head .kind{font-family:var(--font-mono);font-size:9.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:0.08em}
+  .node.source .node-head{background:rgba(62,207,142,0.06)}
+  .node.xform .node-head{background:rgba(79,124,247,0.06)}
+  .node.ui .node-head{background:rgba(212,167,58,0.06)}
+  .node.page .node-head{background:rgba(239,107,107,0.06)}
+  .node.auth .node-head{background:rgba(143,95,247,0.07)}
+  .node.pay  .node-head{background:rgba(62,207,142,0.07)}
+  .node.mail .node-head{background:rgba(79,124,247,0.06)}
+  .node.ai   .node-head{background:linear-gradient(90deg,rgba(143,95,247,0.10),rgba(247,95,165,0.10))}
+
+  /* DB table node */
+  .node.table{min-width:230px}
+  .node.table .node-head{background:rgba(62,207,142,0.06)}
+  .node.table .thead{
+    display:grid;grid-template-columns:1fr 70px 18px;gap:8px;
+    padding:5px 14px;font-family:var(--font-mono);font-size:9.5px;
+    color:var(--ink-4);text-transform:uppercase;letter-spacing:0.08em;
+    border-bottom:1px solid var(--line-1);
+  }
+  .node.table .trow{
+    display:grid;grid-template-columns:1fr 70px 18px;gap:8px;align-items:center;
+    padding:6px 14px;font-size:11.5px;color:var(--ink-1);
+    border-bottom:1px solid var(--line-1);position:relative;
+  }
+  .node.table .trow:last-child{border-bottom:none}
+  .node.table .trow .t{font-family:var(--font-mono);font-size:10px;color:var(--ink-3)}
+  .node.table .trow .k{
+    font-size:9px;font-family:var(--font-mono);color:var(--ink-4);
+    display:inline-flex;align-items:center;justify-content:center;
+    width:16px;height:16px;border-radius:3px;
+  }
+  .node.table .trow .k.pk{background:rgba(212,167,58,0.18);color:var(--warn)}
+  .node.table .trow .k.fk{background:rgba(79,124,247,0.18);color:#b7c5ff}
+  .node.table .trow .k.un{background:rgba(62,207,142,0.18);color:var(--pos)}
+  .node.table .trow .dot{
+    width:9px;height:9px;border-radius:50%;background:var(--bg-1);
+    border:1.5px solid var(--line-3);position:absolute;right:-5px;top:50%;transform:translateY(-50%);
+  }
+  .node.table .trow .dot.live{background:var(--pos);border-color:var(--pos)}
+  .node.table .tfoot{
+    padding:6px 14px;font-size:10.5px;color:var(--ink-3);display:flex;justify-content:space-between;
+    background:var(--bg-2);border-top:1px solid var(--line-1);
+  }
+  .node.table .tfoot .n{font-family:var(--font-mono)}
+
+  /* Auth node */
+  .node.auth .body{padding:10px 14px;display:flex;flex-direction:column;gap:6px}
+  .node.auth .prov{
+    display:flex;align-items:center;justify-content:space-between;
+    font-size:11px;color:var(--ink-1);
+  }
+  .node.auth .prov .on-chip{
+    font-family:var(--font-mono);font-size:9.5px;padding:1px 6px;border-radius:10px;
+    background:rgba(62,207,142,0.14);color:var(--pos);
+  }
+  .node.auth .prov .off-chip{
+    font-family:var(--font-mono);font-size:9.5px;padding:1px 6px;border-radius:10px;
+    background:var(--bg-3);color:var(--ink-3);border:1px solid var(--line-2);
+  }
+  .node.auth .prov .pi{
+    width:16px;height:16px;border-radius:4px;background:var(--bg-3);
+    border:1px solid var(--line-2);display:inline-flex;align-items:center;justify-content:center;
+    font-size:9px;font-family:var(--font-mono);color:var(--ink-2);margin-right:8px;
+  }
+
+  /* Payments node */
+  .node.pay .body{padding:10px 14px}
+  .node.pay .plan{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:6px 0;border-bottom:1px dashed var(--line-2);font-size:11px;
+  }
+  .node.pay .plan:last-child{border-bottom:none}
+  .node.pay .plan .p{font-family:var(--font-mono);color:var(--ink-3)}
+  .node.pay .plan .a{font-variant-numeric:tabular-nums;font-weight:500}
+
+  /* Email node */
+  .node.mail .body{padding:10px 14px;font-size:11px;color:var(--ink-2);line-height:1.6}
+  .node.mail .body .sub{color:var(--ink-0);font-weight:500;margin-bottom:4px;font-size:11.5px}
+  .node.mail .body .tpl{
+    font-family:var(--font-mono);font-size:10px;color:var(--ink-3);
+    background:var(--bg-2);border:1px solid var(--line-1);border-radius:4px;
+    padding:3px 6px;margin-top:6px;display:inline-block;
+  }
+
+  /* AI node */
+  .node.ai .body{padding:10px 14px;font-size:11px;color:var(--ink-2)}
+  .node.ai .body .md{
+    font-family:var(--font-mono);font-size:10px;color:var(--ink-3);
+    background:var(--bg-2);border:1px solid var(--line-1);border-radius:4px;
+    padding:4px 6px;margin-bottom:6px;display:inline-block;
+  }
+  .node.ai .prompt{
+    font-size:10.5px;color:var(--ink-2);line-height:1.5;
+    border-left:2px solid rgba(143,95,247,0.5);padding-left:8px;margin-top:4px;
+    font-style:italic;
+  }
+
+  /* Group frame */
+  .group-frame{
+    position:absolute;border:1px dashed var(--line-3);border-radius:12px;
+    pointer-events:none;
+  }
+  .group-frame .label{
+    position:absolute;top:-11px;left:14px;background:var(--bg-0);padding:0 8px;
+    font-size:10px;color:var(--ink-3);font-family:var(--font-mono);
+    text-transform:uppercase;letter-spacing:0.08em;
+  }
+
+  .port{
+    position:relative;padding:6px 14px;font-size:11px;color:var(--ink-2);
+    display:flex;align-items:center;
+  }
+  .port .dot{
+    width:9px;height:9px;border-radius:50%;background:var(--bg-1);border:1.5px solid var(--line-3);
+    position:absolute;top:50%;transform:translateY(-50%);
+  }
+  .port.in .dot{left:-5px}
+  .port.out .dot{right:-5px}
+  .port.in{padding-left:20px}
+  .port.out{padding-right:20px;justify-content:flex-end}
+  .port .dot.live{background:var(--brand);border-color:var(--brand)}
+  .port .mono{font-family:var(--font-mono);color:var(--ink-3);font-size:10.5px;margin-left:auto}
+
+  .wires{position:absolute;inset:0;pointer-events:none}
+  .wires path{fill:none;stroke:var(--line-3);stroke-width:1.4}
+  .wires path.active{stroke:var(--brand);stroke-width:1.5}
+
+  .graph-toolbar{
+    position:sticky;z-index:10;bottom:16px;margin:0 auto 16px;width:max-content;
+    background:var(--bg-1);border:1px solid var(--line-2);border-radius:999px;padding:4px;
+    display:flex;gap:2px;box-shadow:0 10px 30px rgba(0,0,0,0.5);
+  }
+  .graph-toolbar button{
+    padding:6px 12px;border-radius:999px;font-size:11.5px;color:var(--ink-2);
+  }
+  .graph-toolbar button:hover{background:var(--bg-3);color:var(--ink-0)}
+  .graph-toolbar button.primary{background:var(--brand);color:#fff}
+
+  /* Tweaks floating */
+  .tweaks-panel{
+    position:fixed;right:20px;bottom:64px;z-index:110;
+    width:240px;background:var(--bg-1);border:1px solid var(--line-2);border-radius:var(--r-lg);
+    padding:14px;box-shadow:0 20px 40px rgba(0,0,0,0.5);display:none;
+  }
+  .tweaks-panel.show{display:block}
+  .tweaks-panel h4{margin:0 0 10px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-2)}
+  .tw-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--line-1);font-size:12px;color:var(--ink-2)}
+  .tw-row:first-of-type{border-top:none}
+  .tw-seg{display:flex;background:var(--bg-2);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:2px}
+  .tw-seg span{padding:3px 8px;font-size:10.5px;border-radius:4px;color:var(--ink-3);cursor:pointer}
+  .tw-seg span.on{background:var(--bg-4);color:var(--ink-0)}
+
+  /* View switching */
+  .view{display:none;flex:1;min-height:0;flex-direction:column}
+  .view.active{display:flex}
+
+  /* helper text */
+  .kbd{
+    display:inline-flex;align-items:center;height:18px;padding:0 5px;border-radius:3px;
+    background:var(--bg-3);border:1px solid var(--line-2);font-family:var(--font-mono);font-size:10px;color:var(--ink-3);
+  }
+</style>
+</head>
+<body class="swap-panels light" data-cc-id="cc-1" style="cursor: crosshair; font-family: Geist;">
+
+<!-- icons (inline SVG symbols) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-chev-down" viewBox="0 0 10 10"><path d="M2 4l3 3 3-3"></path></symbol>
+    <symbol id="i-chev-right" viewBox="0 0 10 10"><path d="M4 2l3 3-3 3"></path></symbol>
+    <symbol id="i-folder" viewBox="0 0 16 16"><path d="M2 5a1 1 0 0 1 1-1h3l2 2h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"></path></symbol>
+    <symbol id="i-frame" viewBox="0 0 16 16"><path d="M3 3h10v10H3z"></path><path d="M3 6h10M3 10h10M6 3v10M10 3v10"></path></symbol>
+    <symbol id="i-text" viewBox="0 0 16 16"><path d="M4 4h8M8 4v8M5 12h6"></path></symbol>
+    <symbol id="i-img" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1"></rect><circle cx="6" cy="7" r="1"></circle><path d="M2 11l3-2 3 2 3-3 3 3"></path></symbol>
+    <symbol id="i-btn" viewBox="0 0 16 16"><rect x="2" y="5" width="12" height="6" rx="2"></rect></symbol>
+    <symbol id="i-stack" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="3"></rect><rect x="2" y="7" width="12" height="3"></rect><rect x="2" y="12" width="12" height="3"></rect></symbol>
+    <symbol id="i-db" viewBox="0 0 16 16"><ellipse cx="8" cy="4" rx="5" ry="2"></ellipse><path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4"></path><path d="M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"></path></symbol>
+    <symbol id="i-lock" viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="7" rx="1"></rect><path d="M5 7V5a3 3 0 1 1 6 0v2"></path></symbol>
+
+    <symbol id="i-cursor" viewBox="0 0 16 16"><path d="M3 2l5 11 1.5-4.5L14 7z"></path></symbol>
+    <symbol id="i-move" viewBox="0 0 16 16"><path d="M8 2v12M2 8h12M5 5l-3 3 3 3M11 5l3 3-3 3M5 11l3 3 3-3M5 5l3-3 3 3"></path></symbol>
+    <symbol id="i-comp" viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5"></rect><rect x="9" y="2" width="5" height="5"></rect><rect x="2" y="9" width="5" height="5"></rect><rect x="9" y="9" width="5" height="5"></rect></symbol>
+    <symbol id="i-layers" viewBox="0 0 16 16"><path d="M8 2l6 3-6 3-6-3z"></path><path d="M2 8l6 3 6-3M2 11l6 3 6-3"></path></symbol>
+    <symbol id="i-code" viewBox="0 0 16 16"><path d="M5 4L1 8l4 4M11 4l4 4-4 4M9 3l-2 10"></path></symbol>
+    <symbol id="i-plug" viewBox="0 0 16 16"><path d="M6 2v3M10 2v3M4 5h8v3a4 4 0 0 1-8 0V5z"></path><path d="M8 12v2"></path></symbol>
+    <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"></circle><path d="M10.5 10.5L14 14"></path></symbol>
+    <symbol id="i-back" viewBox="0 0 16 16"><path d="M10 3L5 8l5 5"></path></symbol>
+    <symbol id="i-fwd" viewBox="0 0 16 16"><path d="M6 3l5 5-5 5"></path></symbol>
+    <symbol id="i-reload" viewBox="0 0 16 16"><path d="M13 8a5 5 0 1 1-1.5-3.5L13 6"></path><path d="M13 3v3h-3"></path></symbol>
+    <symbol id="i-settings" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2"></circle><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M3.5 12.5l1.4-1.4M11.1 4.9l1.4-1.4"></path></symbol>
+    <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"></circle><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.5 1.5M11.5 11.5L13 13M3 13l1.5-1.5M11.5 4.5L13 3"></path></symbol>
+    <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13 9.5A5.5 5.5 0 1 1 6.5 3a4.5 4.5 0 0 0 6.5 6.5z"></path></symbol>
+    <symbol id="i-share" viewBox="0 0 16 16"><path d="M4 8v5h8V8"></path><path d="M8 10V2M5 5l3-3 3 3"></path></symbol>
+    <symbol id="i-dollar" viewBox="0 0 16 16"><path d="M8 2v12M11 5H6.5a1.5 1.5 0 1 0 0 3h3a1.5 1.5 0 1 1 0 3H5"></path></symbol>
+    <symbol id="i-users" viewBox="0 0 16 16"><circle cx="6" cy="6" r="2.5"></circle><path d="M2 14c0-2.2 1.8-4 4-4s4 1.8 4 4"></path><circle cx="11" cy="5" r="2"></circle><path d="M10 10c2 0 4 1.5 4 4"></path></symbol>
+    <symbol id="i-cart" viewBox="0 0 16 16"><circle cx="6" cy="13" r="1"></circle><circle cx="12" cy="13" r="1"></circle><path d="M2 2h2l2 9h7l1-6H5"></path></symbol>
+    <symbol id="i-chart" viewBox="0 0 16 16"><path d="M2 13h12M4 10l3-4 3 3 3-5"></path></symbol>
+    <symbol id="i-mail" viewBox="0 0 16 16"><rect x="2" y="4" width="12" height="9" rx="1"></rect><path d="M2 5l6 4 6-4"></path></symbol>
+    <symbol id="i-bolt" viewBox="0 0 16 16"><path d="M9 1L3 9h4l-1 6 6-8H8z"></path></symbol>
+    <symbol id="i-box" viewBox="0 0 16 16"><path d="M2 5l6-3 6 3v6l-6 3-6-3z"></path><path d="M2 5l6 3 6-3M8 8v6"></path></symbol>
+    <symbol id="i-file" viewBox="0 0 16 16"><path d="M4 2h6l3 3v9H4z"></path><path d="M10 2v3h3"></path></symbol>
+    <symbol id="i-clock" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"></circle><path d="M8 5v3l2 1"></path></symbol>
+    <symbol id="i-spark" viewBox="0 0 16 16"><path d="M8 2v3M8 11v3M2 8h3M11 8h3M4 4l2 2M10 10l2 2M4 12l2-2M10 6l2-2"></path></symbol>
+    <symbol id="i-x" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"></path></symbol>
+  </defs>
+</svg>
+
+<div class="app">
+  <!-- ======= TOP MENUBAR ======= -->
+  <div class="menubar">
+    <div class="menubar-left">
+      <div class="brand"><span class="logo"></span>atlantic</div>
+      <span class="breadcrumbs">
+        <span>Personal</span><span class="sep">/</span>
+        <span>SaaS Starter</span><span class="sep">/</span>
+        <span class="cur">Dashboard</span>
+      </span>
+    </div>
+
+    <div class="deck-tabs">
+      <button class="deck-tab active" data-view="editor"><span class="idx">01</span> Editor</button>
+      <button class="deck-tab" data-view="code"><span class="idx">02</span> Design ↔ Code</button>
+      <button class="deck-tab" data-view="toggles"><span class="idx">03</span> Backend · Toggles</button>
+      <button class="deck-tab" data-view="blocks"><span class="idx">04</span> Backend · Blocks</button>
+      <button class="deck-tab" data-view="graph"><span class="idx">05</span> Backend · Graph</button>
+    </div>
+
+    <div class="menubar-right">
+      <span class="project-pill"><span class="dot"></span>Live · v12</span>
+      <button class="icon-btn" title="Theme" id="theme-btn"><svg><use href="#i-moon"></use></svg></button>
+      <button class="icon-btn" title="Share"><svg><use href="#i-share"></use></svg></button>
+      <button class="publish-btn">Publish</button>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- ======================= EDITOR VIEW ====================== -->
+  <!-- ========================================================== -->
+  <div class="view active" data-view="editor">
+    <div class="workspace">
+      <!-- RAIL -->
+      <div class="rail">
+        <button class="tool active" title="Select"><svg><use href="#i-cursor"></use></svg></button>
+        <button class="tool" title="Move"><svg><use href="#i-move"></use></svg></button>
+        <span class="sep"></span>
+        <button class="tool" title="Components"><svg><use href="#i-comp"></use></svg></button>
+        <button class="tool" title="Layers"><svg><use href="#i-layers"></use></svg></button>
+        <button class="tool" title="Data"><svg><use href="#i-db"></use></svg></button>
+        <button class="tool" title="Code"><svg><use href="#i-code"></use></svg></button>
+        <button class="tool" title="Backend"><svg><use href="#i-plug"></use></svg></button>
+        <span style="flex:1"></span>
+        <button class="tool" title="Settings"><svg><use href="#i-settings"></use></svg></button>
+      </div>
+
+      <!-- LEFT PANEL: LAYERS -->
+      <aside class="panel">
+        <div class="panel-head">
+          <span class="panel-title">Layers</span>
+          <span class="panel-badge">Design</span>
+        </div>
+        <div class="search">
+          <svg><use href="#i-search"></use></svg>
+          <input placeholder="Search layers…">
+          <span class="kbd">⌘F</span>
+        </div>
+        <div class="tree">
+          <div class="tree-row"><span class="caret"><svg><use href="#i-chev-down"></use></svg></span><span class="ico"><svg><use href="#i-file"></use></svg></span>Page</div>
+          <div class="tree-row child"><span class="caret"><svg><use href="#i-chev-down"></use></svg></span><span class="ico"><svg><use href="#i-frame"></use></svg></span>Header</div>
+          <div class="tree-row child2 sel"><span class="caret" style="visibility:hidden"></span><span class="ico"><svg><use href="#i-img"></use></svg></span>Logo</div>
+          <div class="tree-row child2"><span class="caret" style="visibility:hidden"></span><span class="ico"><svg><use href="#i-stack"></use></svg></span>Navigation</div>
+          <div class="tree-row child"><span class="caret"><svg><use href="#i-chev-down"></use></svg></span><span class="ico"><svg><use href="#i-frame"></use></svg></span>Main</div>
+          <div class="tree-row child2"><span class="caret" style="visibility:hidden"></span><span class="ico"><svg><use href="#i-text"></use></svg></span>Hero Section</div>
+          <div class="tree-row child2"><span class="caret"><svg><use href="#i-chev-right"></use></svg></span><span class="ico"><svg><use href="#i-stack"></use></svg></span>Stat Grid</div>
+          <div class="tree-row child2"><span class="caret"><svg><use href="#i-chev-right"></use></svg></span><span class="ico"><svg><use href="#i-stack"></use></svg></span>Transactions</div>
+          <div class="tree-row child"><span class="caret"><svg><use href="#i-chev-down"></use></svg></span><span class="ico"><svg><use href="#i-frame"></use></svg></span>Footer</div>
+          <div class="tree-row child2"><span class="caret" style="visibility:hidden"></span><span class="ico"><svg><use href="#i-text"></use></svg></span>Copyright</div>
+
+          <div class="tree-section-title">Data</div>
+          <div class="tree-row"><span class="caret" style="visibility:hidden"></span><span class="ico"><svg><use href="#i-users"></use></svg></span>users <span style="margin-left:auto;font-family:var(--font-mono);font-size:10px;color:var(--ink-4)">auth</span></div>
+          <div class="tree-row"><span class="caret" style="visibility:hidden"></span><span class="ico"><svg><use href="#i-cart"></use></svg></span>orders <span style="margin-left:auto;font-family:var(--font-mono);font-size:10px;color:var(--ink-4)">db</span></div>
+          <div class="tree-row"><span class="caret" style="visibility:hidden"></span><span class="ico"><svg><use href="#i-chart"></use></svg></span>metrics <span style="margin-left:auto;font-family:var(--font-mono);font-size:10px;color:var(--ink-4)">view</span></div>
+        </div>
+      </aside>
+
+      <!-- CENTER -->
+      <div class="center">
+        <div class="urlbar-row">
+          <div class="nav-btns">
+            <button class="icon-btn"><svg><use href="#i-back"></use></svg></button>
+            <button class="icon-btn"><svg><use href="#i-fwd"></use></svg></button>
+            <button class="icon-btn"><svg><use href="#i-reload"></use></svg></button>
+          </div>
+          <div class="url">
+            <svg class="lock" width="11" height="11"><use href="#i-lock"></use></svg>
+            <span class="path">https://dashboard.atlantic.app<span style="color:var(--ink-3)">/</span></span>
+            <span style="margin-left:auto;color:var(--ink-4);font-size:10px">100%</span>
+          </div>
+          <button class="icon-btn"><svg><use href="#i-share"></use></svg></button>
+        </div>
+
+        <div class="canvas">
+          <div class="artboard-label">
+            <span class="chip">Dashboard.jsx</span>
+            <span>1440 × 900</span>
+            <span>·</span>
+            <span>Desktop</span>
+          </div>
+
+          <div class="artboard">
+            <div class="ab-head">
+              <div>
+                <h1>Dashboard</h1>
+                <div class="sub">Welcome back! Here's what's happening.</div>
+              </div>
+              <div class="actions">
+                <button class="btn btn-ghost">Go</button>
+                <button class="btn btn-primary">Export Report</button>
+              </div>
+            </div>
+
+            <div class="stats">
+              <div class="stat">
+                <div class="row"><span>Total Revenue</span><span class="ico"><svg><use href="#i-dollar"></use></svg></span></div>
+                <div class="val">$48,291</div>
+                <div class="delta up">▲ 12.5% <span class="muted">vs last month</span></div>
+              </div>
+              <div class="stat">
+                <div class="row"><span>Active Users</span><span class="ico"><svg><use href="#i-users"></use></svg></span></div>
+                <div class="val">12,453</div>
+                <div class="delta down">▼ 8.2% <span class="muted">vs last month</span></div>
+              </div>
+              <div class="stat">
+                <div class="row"><span>New Orders</span><span class="ico"><svg><use href="#i-cart"></use></svg></span></div>
+                <div class="val">1,284</div>
+                <div class="delta down">▼ 3.1% <span class="muted">vs last month</span></div>
+              </div>
+              <div class="stat">
+                <div class="row"><span>Churn Rate</span><span class="ico"><svg><use href="#i-chart"></use></svg></span></div>
+                <div class="val">2.4%</div>
+                <div class="delta up">▼ 0.5% <span class="muted">vs last month</span></div>
+              </div>
+            </div>
+
+            <div class="tx-card">
+              <div class="tx-head">
+                <h3>Recent Transactions</h3>
+                <a href="#">View all →</a>
+              </div>
+              <table class="tbl">
+                <thead><tr>
+                  <th>Invoice</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th>
+                </tr></thead>
+                <tbody>
+                  <tr><td class="inv">#INV-001</td><td class="cust">Acme Corp</td><td class="amt">$4,200</td><td><span class="badge paid">Paid</span></td><td style="color:var(--ink-3)">Mar 10</td></tr>
+                  <tr><td class="inv">#INV-002</td><td class="cust">Globex Inc</td><td class="amt">$1,800</td><td><span class="badge pend">Pending</span></td><td style="color:var(--ink-3)">Mar 9</td></tr>
+                  <tr><td class="inv">#INV-003</td><td class="cust">Initech</td><td class="amt">$3,600</td><td><span class="badge paid">Paid</span></td><td style="color:var(--ink-3)">Mar 8</td></tr>
+                  <tr><td class="inv">#INV-004</td><td class="cust">Umbrella Ltd</td><td class="amt">$920</td><td><span class="badge over">Overdue</span></td><td style="color:var(--ink-3)">Mar 6</td></tr>
+                  <tr><td class="inv">#INV-005</td><td class="cust">Stark Industries</td><td class="amt">$7,100</td><td><span class="badge paid">Paid</span></td><td style="color:var(--ink-3)">Mar 5</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: PROPERTIES -->
+      <aside class="panel panel-right">
+        <div class="panel-head">
+          <span class="panel-title">Properties</span>
+          <span style="font-family:var(--font-mono);font-size:10.5px;color:var(--ink-3)">Logo</span>
+        </div>
+        <div class="props">
+          <div class="prop-selected">
+            <div>
+              <div class="name">Logo</div>
+              <div class="kind">&lt;Image/&gt;</div>
+            </div>
+            <button class="icon-btn"><svg><use href="#i-x"></use></svg></button>
+          </div>
+
+          <div class="prop-seg">
+            <span class="on">Logo</span>
+            <span>Img</span>
+            <span>Link</span>
+          </div>
+
+          <div class="prop-group">
+            <h5>Source</h5>
+            <div class="field"><span class="lbl">src</span><div class="input"><input value="/logo.svg"></div></div>
+            <div class="field"><span class="lbl">alt</span><div class="input"><input value="Logo"></div></div>
+          </div>
+
+          <div class="prop-group">
+            <h5>Layout</h5>
+            <div class="field-pair">
+              <div class="input"><input value="120"><span class="suffix">w</span></div>
+              <div class="input"><input value="auto"><span class="suffix">h</span></div>
+            </div>
+            <div class="field-pair" style="margin-top:6px">
+              <div class="input"><input value="0"><span class="suffix">x</span></div>
+              <div class="input"><input value="0"><span class="suffix">y</span></div>
+            </div>
+          </div>
+
+          <div class="prop-group">
+            <h5>Fill</h5>
+            <div class="swatch-row">
+              <div class="swatch" style="background:#fff"></div>
+              <div class="input" style="flex:1"><input value="#FFFFFF"></div>
+              <div class="input" style="max-width:54px"><input value="100"><span class="suffix">%</span></div>
+            </div>
+          </div>
+
+          <div class="prop-group">
+            <h5>Data binding</h5>
+            <div class="input" style="color:var(--ink-3);font-style:italic">+ Bind to source…</div>
+          </div>
+
+          <div class="collapse-divider"></div>
+
+          <div class="prop-group">
+            <h5>Generated JSX</h5>
+            <div class="input" style="font-family:var(--font-mono);font-size:10.5px;height:auto;padding:8px 10px;display:block">
+              <span style="color:#89ddff">&lt;Image</span> <span style="color:#82aaff">src</span>=<span style="color:#c3e88d">"/logo.svg"</span><br>
+              &nbsp;&nbsp;<span style="color:#82aaff">alt</span>=<span style="color:#c3e88d">"Logo"</span><br>
+              &nbsp;&nbsp;<span style="color:#82aaff">width</span>={<span style="color:#f78c6c">120</span>} <span style="color:#89ddff">/&gt;</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- ===================== DESIGN ↔ CODE ====================== -->
+  <!-- ========================================================== -->
+  <div class="view" data-view="code">
+    <div class="workspace">
+      <!-- RAIL (shared look) -->
+      <div class="rail">
+        <button class="tool"><svg><use href="#i-cursor"></use></svg></button>
+        <button class="tool"><svg><use href="#i-move"></use></svg></button>
+        <span class="sep"></span>
+        <button class="tool"><svg><use href="#i-comp"></use></svg></button>
+        <button class="tool"><svg><use href="#i-layers"></use></svg></button>
+        <button class="tool"><svg><use href="#i-db"></use></svg></button>
+        <button class="tool active"><svg><use href="#i-code"></use></svg></button>
+        <button class="tool"><svg><use href="#i-plug"></use></svg></button>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-head">
+          <span class="panel-title">Files</span>
+          <span class="panel-badge">Code</span>
+        </div>
+        <div class="tree" style="padding-top:8px">
+          <div class="tree-row"><span class="caret"><svg><use href="#i-chev-down"></use></svg></span><span class="ico"><svg><use href="#i-folder"></use></svg></span>src</div>
+          <div class="tree-row child"><span class="caret"><svg><use href="#i-chev-down"></use></svg></span><span class="ico"><svg><use href="#i-folder"></use></svg></span>pages</div>
+          <div class="tree-row child2 sel" style="padding-left:34px"><span class="ico"><svg><use href="#i-file"></use></svg></span>Dashboard.jsx</div>
+          <div class="tree-row child2" style="padding-left:34px"><span class="ico"><svg><use href="#i-file"></use></svg></span>Login.jsx</div>
+          <div class="tree-row child2" style="padding-left:34px"><span class="ico"><svg><use href="#i-file"></use></svg></span>Settings.jsx</div>
+          <div class="tree-row child"><span class="caret"><svg><use href="#i-chev-down"></use></svg></span><span class="ico"><svg><use href="#i-folder"></use></svg></span>components</div>
+          <div class="tree-row child2" style="padding-left:34px"><span class="ico"><svg><use href="#i-file"></use></svg></span>StatCard.jsx</div>
+          <div class="tree-row child2" style="padding-left:34px"><span class="ico"><svg><use href="#i-file"></use></svg></span>TxTable.jsx</div>
+          <div class="tree-row child2" style="padding-left:34px"><span class="ico"><svg><use href="#i-file"></use></svg></span>Badge.jsx</div>
+          <div class="tree-row child"><span class="caret"><svg><use href="#i-chev-down"></use></svg></span><span class="ico"><svg><use href="#i-folder"></use></svg></span>data</div>
+          <div class="tree-row child2" style="padding-left:34px"><span class="ico"><svg><use href="#i-file"></use></svg></span>useOrders.ts</div>
+          <div class="tree-row child2" style="padding-left:34px"><span class="ico"><svg><use href="#i-file"></use></svg></span>useUsers.ts</div>
+        </div>
+      </aside>
+
+      <div class="center">
+        <div class="code-split">
+          <!-- LEFT: canvas preview -->
+          <div class="pane-col">
+            <div class="pane-top">
+              <span class="crumbs">src<span class="sl">/</span>pages<span class="sl">/</span><span style="color:var(--ink-0)">Dashboard.jsx</span></span>
+              <div class="right">
+                <button class="tgt on">Canvas</button>
+              </div>
+            </div>
+            <div class="mini-preview">
+              <div class="mini-frame">
+                <div class="mf-head">
+                  <h4>Dashboard</h4>
+                  <p>Welcome back! Here's what's happening.</p>
+                </div>
+                <div class="mf-stats">
+                  <div class="ms"><div class="l">Revenue</div><div class="v">$48.3k</div></div>
+                  <div class="ms sel"><div class="l">Users</div><div class="v">12,453</div></div>
+                  <div class="ms"><div class="l">Orders</div><div class="v">1,284</div></div>
+                  <div class="ms"><div class="l">Churn</div><div class="v">2.4%</div></div>
+                </div>
+                <div style="padding:14px;border-top:1px solid var(--line-1);flex:1;overflow:auto">
+                  <div style="font-size:12px;font-weight:600;margin-bottom:10px">Recent Transactions</div>
+                  <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--ink-3);display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line-1)"><span>#INV-001</span><span>Acme Corp</span><span>$4,200</span><span class="badge paid" style="font-size:9px">Paid</span></div>
+                  <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--ink-3);display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line-1)"><span>#INV-002</span><span>Globex</span><span>$1,800</span><span class="badge pend" style="font-size:9px">Pending</span></div>
+                  <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--ink-3);display:flex;justify-content:space-between;padding:6px 0"><span>#INV-003</span><span>Initech</span><span>$3,600</span><span class="badge paid" style="font-size:9px">Paid</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: code -->
+          <div class="pane-col">
+            <div class="pane-top">
+              <span class="crumbs">Dashboard.jsx <span class="sl">·</span> <span style="color:var(--pos)">synced</span></span>
+              <div class="right">
+                <button class="tgt">jsx</button>
+                <button class="tgt on">tailwind</button>
+                <button class="tgt">css</button>
+              </div>
+            </div>
+            <div class="code">
+              <div class="gutter">
+                1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22
+              </div>
+<pre><span class="cmt">// Auto-generated from Dashboard artboard</span>
+<span class="kw">import</span> { StatCard, TxTable } <span class="kw">from</span> <span class="str">"../components"</span>
+<span class="kw">import</span> { useOrders, useUsers } <span class="kw">from</span> <span class="str">"../data"</span>
+
+<span class="kw">export default function</span> <span class="fn">Dashboard</span>() {
+  <span class="kw">const</span> orders = <span class="fn">useOrders</span>()
+  <span class="kw">const</span> users  = <span class="fn">useUsers</span>()
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;main</span> <span class="attr">className</span>=<span class="str">"p-8 space-y-6"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;header&gt;</span>
+        <span class="tag">&lt;h1</span> <span class="attr">className</span>=<span class="str">"text-2xl font-semibold"</span><span class="tag">&gt;</span>Dashboard<span class="tag">&lt;/h1&gt;</span>
+        <span class="tag">&lt;p&gt;</span>Welcome back! Here's what's happening.<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;/header&gt;</span>
+      <span class="tag">&lt;section</span> <span class="attr">className</span>=<span class="str">"grid grid-cols-4 gap-4"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;StatCard</span> <span class="attr">label</span>=<span class="str">"Total Revenue"</span> <span class="attr">value</span>=<span class="str">"$48,291"</span> <span class="tag">/&gt;</span>
+<span class="hl">        <span class="tag">&lt;StatCard</span> <span class="attr">label</span>=<span class="str">"Active Users"</span> <span class="attr">value</span>={users.count} <span class="tag">/&gt;</span></span>
+        <span class="tag">&lt;StatCard</span> <span class="attr">label</span>=<span class="str">"New Orders"</span>   <span class="attr">value</span>={orders.count} <span class="tag">/&gt;</span>
+        <span class="tag">&lt;StatCard</span> <span class="attr">label</span>=<span class="str">"Churn Rate"</span>   <span class="attr">value</span>=<span class="str">"2.4%"</span> <span class="tag">/&gt;</span>
+      <span class="tag">&lt;/section&gt;</span>
+      <span class="tag">&lt;TxTable</span> <span class="attr">rows</span>={orders.recent} <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/main&gt;</span>
+  )
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel panel-right">
+        <div class="panel-head">
+          <span class="panel-title">Inspector</span>
+          <span style="font-family:var(--font-mono);font-size:10.5px;color:var(--ink-3)">StatCard</span>
+        </div>
+        <div class="props">
+          <div class="prop-selected">
+            <div>
+              <div class="name">StatCard · Users</div>
+              <div class="kind">line 16 · Dashboard.jsx</div>
+            </div>
+          </div>
+
+          <div class="prop-group">
+            <h5>Props</h5>
+            <div class="field"><span class="lbl">label</span><div class="input"><input value="Active Users"></div></div>
+            <div class="field"><span class="lbl">value</span><div class="input" style="background:rgba(79,124,247,0.08);border-color:rgba(79,124,247,0.35)"><input value="{users.count}" style="color:#b7c5ff"></div></div>
+            <div class="field"><span class="lbl">delta</span><div class="input"><input value="-8.2%"></div></div>
+          </div>
+
+          <div class="prop-group">
+            <h5>Bound to</h5>
+            <div class="gen-card" style="padding:10px">
+              <div class="tag">DATA SOURCE</div>
+              <div class="name" style="font-size:12.5px">useUsers()</div>
+              <div class="exp">Returns active user count · refreshes every 30s</div>
+            </div>
+          </div>
+
+          <div class="prop-group">
+            <h5>Export targets</h5>
+            <div class="prop-seg" style="margin-bottom:6px">
+              <span class="on">Next.js</span><span>Vite</span><span>Astro</span>
+            </div>
+            <div class="prop-seg">
+              <span>css</span><span class="on">tailwind</span><span>css-in-js</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- ==================== BACKEND · TOGGLES =================== -->
+  <!-- ========================================================== -->
+  <div class="view" data-view="toggles">
+    <div class="backend-workspace">
+      <div class="rail">
+        <button class="tool"><svg><use href="#i-cursor"></use></svg></button>
+        <button class="tool"><svg><use href="#i-move"></use></svg></button>
+        <span class="sep"></span>
+        <button class="tool"><svg><use href="#i-comp"></use></svg></button>
+        <button class="tool"><svg><use href="#i-layers"></use></svg></button>
+        <button class="tool"><svg><use href="#i-db"></use></svg></button>
+        <button class="tool"><svg><use href="#i-code"></use></svg></button>
+        <button class="tool active"><svg><use href="#i-plug"></use></svg></button>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-head">
+          <span class="panel-title">Features</span>
+          <span class="panel-badge" style="background:rgba(62,207,142,0.12);color:var(--pos);border-color:rgba(62,207,142,0.28)">3 on</span>
+        </div>
+        <div class="search">
+          <svg><use href="#i-search"></use></svg>
+          <input placeholder="Filter features…">
+        </div>
+        <div class="feat-list">
+          <div class="feat on">
+            <div class="ico-b"><svg><use href="#i-lock"></use></svg></div>
+            <div><div class="ttl">Authentication</div><div class="dsc">Email · OAuth · Magic link</div></div>
+            <div class="switch"></div>
+          </div>
+          <div class="feat on">
+            <div class="ico-b"><svg><use href="#i-db"></use></svg></div>
+            <div><div class="ttl">Database</div><div class="dsc">Postgres · Auto-schema</div></div>
+            <div class="switch"></div>
+          </div>
+          <div class="feat">
+            <div class="ico-b"><svg><use href="#i-dollar"></use></svg></div>
+            <div><div class="ttl">Payments</div><div class="dsc">Stripe · Subscriptions</div></div>
+            <div class="switch"></div>
+          </div>
+          <div class="feat on">
+            <div class="ico-b"><svg><use href="#i-box"></use></svg></div>
+            <div><div class="ttl">File storage</div><div class="dsc">S3-compatible · Uploads</div></div>
+            <div class="switch"></div>
+          </div>
+          <div class="feat">
+            <div class="ico-b"><svg><use href="#i-mail"></use></svg></div>
+            <div><div class="ttl">Email</div><div class="dsc">Transactional + Marketing</div></div>
+            <div class="switch"></div>
+          </div>
+          <div class="feat">
+            <div class="ico-b"><svg><use href="#i-bolt"></use></svg></div>
+            <div><div class="ttl">Realtime</div><div class="dsc">WebSockets · Presence</div></div>
+            <div class="switch"></div>
+          </div>
+          <div class="feat">
+            <div class="ico-b"><svg><use href="#i-chart"></use></svg></div>
+            <div><div class="ttl">Analytics</div><div class="dsc">Events · Funnels</div></div>
+            <div class="switch"></div>
+          </div>
+          <div class="feat">
+            <div class="ico-b"><svg><use href="#i-clock"></use></svg></div>
+            <div><div class="ttl">Cron jobs</div><div class="dsc">Scheduled functions</div></div>
+            <div class="switch"></div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="feat-main">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+          <div class="ico-b" style="width:44px;height:44px;border-radius:10px"><svg style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6"><use href="#i-lock"></use></svg></div>
+          <div>
+            <h2>Authentication</h2>
+            <div class="subcopy" style="margin:2px 0 0">Turning this on scaffolds login, sign-up, and a <code style="font-family:var(--font-mono);color:var(--ink-1)">useUser()</code> hook — all as plain files in your repo.</div>
+          </div>
+          <div style="margin-left:auto" class="switch"></div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin:20px 0 22px">
+          <button class="btn btn-ghost">Open docs</button>
+          <button class="btn btn-ghost">View generated files</button>
+          <button class="btn btn-primary">Configure →</button>
+        </div>
+
+        <h5 style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-3);margin:0 0 10px">What you get</h5>
+        <div class="gen-grid">
+          <div class="gen-card">
+            <div class="tag">Screen</div>
+            <div class="name">LoginPage.jsx</div>
+            <div class="exp">Fully editable on the canvas. Wire up your own design.</div>
+          </div>
+          <div class="gen-card">
+            <div class="tag">Screen</div>
+            <div class="name">SignupPage.jsx</div>
+            <div class="exp">With forgot-password and email verification flows.</div>
+          </div>
+          <div class="gen-card">
+            <div class="tag">Hook</div>
+            <div class="name">useUser()</div>
+            <div class="exp">Returns the current user, session, and sign-out method.</div>
+          </div>
+          <div class="gen-card">
+            <div class="tag">Wrapper</div>
+            <div class="name">&lt;Protected /&gt;</div>
+            <div class="exp">Drop around any layer to gate it behind auth.</div>
+          </div>
+        </div>
+
+        <div class="next-box">
+          <h5>Next steps</h5>
+          <ol>
+            <li>Drag a &lt;Protected /&gt; onto any page in Layers.</li>
+            <li>Bind form inputs on LoginPage to the built-in handlers.</li>
+            <li>Publish — auth goes live on your domain.</li>
+          </ol>
+        </div>
+      </div>
+
+      <aside class="panel panel-right">
+        <div class="panel-head">
+          <span class="panel-title">Config · Auth</span>
+          <span style="font-family:var(--font-mono);font-size:10.5px;color:var(--ink-3)">v2.1</span>
+        </div>
+        <div class="props">
+          <div class="prop-group">
+            <h5>Providers</h5>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              <span class="badge paid" style="padding:4px 10px">Email</span>
+              <span class="badge paid" style="padding:4px 10px">Google</span>
+              <span class="badge" style="padding:4px 10px;background:var(--bg-3);color:var(--ink-3);border:1px solid var(--line-2)">+ GitHub</span>
+              <span class="badge" style="padding:4px 10px;background:var(--bg-3);color:var(--ink-3);border:1px solid var(--line-2)">+ Magic</span>
+            </div>
+          </div>
+
+          <div class="prop-group">
+            <h5>Session</h5>
+            <div class="prop-seg">
+              <span class="on">Cookie</span>
+              <span>JWT</span>
+            </div>
+          </div>
+
+          <div class="prop-group">
+            <h5>Redirect after login</h5>
+            <div class="field"><div class="input"><input value="/dashboard"></div></div>
+          </div>
+
+          <div class="prop-group">
+            <h5>Where it runs</h5>
+            <div class="prop-seg">
+              <span class="on">Atlantic cloud</span>
+              <span>Self-host</span>
+            </div>
+          </div>
+
+          <div class="prop-group">
+            <h5>Usage · this month</h5>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px"><span style="color:var(--ink-3)">Active users</span><span>284 / 1,000</span></div>
+            <div style="height:4px;background:var(--bg-3);border-radius:2px;overflow:hidden">
+              <div style="width:28%;height:100%;background:var(--brand)"></div>
+            </div>
+            <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--ink-3);margin-top:8px">$0 / mo up to 1k MAU</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- ==================== BACKEND · BLOCKS ==================== -->
+  <!-- ========================================================== -->
+  <div class="view" data-view="blocks">
+    <div class="workspace">
+      <div class="rail">
+        <button class="tool"><svg><use href="#i-cursor"></use></svg></button>
+        <button class="tool"><svg><use href="#i-move"></use></svg></button>
+        <span class="sep"></span>
+        <button class="tool"><svg><use href="#i-comp"></use></svg></button>
+        <button class="tool"><svg><use href="#i-layers"></use></svg></button>
+        <button class="tool"><svg><use href="#i-db"></use></svg></button>
+        <button class="tool"><svg><use href="#i-code"></use></svg></button>
+        <button class="tool active"><svg><use href="#i-plug"></use></svg></button>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-head">
+          <span class="panel-title">Layers</span>
+          <span class="panel-badge">Pricing</span>
+        </div>
+        <div class="tree" style="padding-top:6px">
+          <div class="tree-row"><span class="caret"><svg><use href="#i-chev-down"></use></svg></span><span class="ico"><svg><use href="#i-file"></use></svg></span>Pricing</div>
+          <div class="tree-row child"><span class="caret"><svg><use href="#i-chev-down"></use></svg></span><span class="ico"><svg><use href="#i-stack"></use></svg></span>Tier Grid</div>
+          <div class="tree-row child2" style="padding-left:34px"><span class="ico"><svg><use href="#i-frame"></use></svg></span>Starter</div>
+          <div class="tree-row child2 sel" style="padding-left:34px"><span class="ico"><svg><use href="#i-frame"></use></svg></span>Pro
+            <span style="margin-left:auto;display:inline-flex;align-items:center;gap:3px;font-family:var(--font-mono);font-size:9.5px;color:#b7c5ff"><svg width="8" height="8" viewBox="0 0 16 16" style="fill:currentColor"><use href="#i-bolt"></use></svg>1</span>
+          </div>
+          <div class="tree-row child2" style="padding-left:34px"><span class="ico"><svg><use href="#i-frame"></use></svg></span>Enterprise</div>
+          <div class="tree-row child"><span class="caret"><svg><use href="#i-chev-down"></use></svg></span><span class="ico"><svg><use href="#i-frame"></use></svg></span>FAQ</div>
+
+          <div class="tree-section-title">Bindings (1)</div>
+          <div class="tree-row" style="background:rgba(79,124,247,0.08);color:var(--ink-1)">
+            <span class="ico"><svg><use href="#i-bolt"></use></svg></span>
+            <span style="font-family:var(--font-mono);font-size:11px">stripe_checkout</span>
+          </div>
+          <div style="font-size:10.5px;color:var(--ink-3);padding:0 10px;margin-top:4px">→ Pro / Upgrade button</div>
+        </div>
+      </aside>
+
+      <div class="center">
+        <div class="urlbar-row">
+          <span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-3);margin-left:4px">Pricing.jsx</span>
+          <div style="flex:1"></div>
+          <span style="font-size:11px;color:var(--ink-3)">Mobile · 390×844</span>
+        </div>
+        <div class="blocks-canvas">
+          <!-- phone -->
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div>
+              <div style="font-size:18px;font-weight:600">Pricing</div>
+              <div style="font-size:12px;color:var(--ink-3);margin-top:2px">Choose a plan that fits.</div>
+            </div>
+            <div class="tier">
+              <div class="tag-s">Starter</div>
+              <div class="price">$19 <small>/ mo</small></div>
+              <div class="d">Everything to get started.</div>
+            </div>
+            <div class="tier pro">
+              <div class="tag-s" style="color:#b7c5ff">Pro · Popular</div>
+              <div class="price">$49 <small>/ mo</small></div>
+              <div class="d">For growing teams.</div>
+              <div class="up-btn">
+                Upgrade →
+                <span class="bound">stripe_checkout</span>
+              </div>
+            </div>
+            <div style="font-size:10.5px;color:var(--ink-3);text-align:center;margin-top:auto">Cancel anytime · 30-day refund</div>
+          </div>
+
+          <!-- tray -->
+          <div class="tray">
+            <h4>Behavior blocks</h4>
+            <div class="tray-sub">Drag onto any layer.</div>
+
+            <div class="section-lbl">Payments</div>
+            <div class="block-item drag"><span class="grip">⋮⋮</span><span class="bi">$</span>stripe_checkout</div>
+            <div class="block-item"><span class="grip">⋮⋮</span><span class="bi">$</span>create_subscription</div>
+
+            <div class="section-lbl">Data</div>
+            <div class="block-item"><span class="grip">⋮⋮</span><span class="bi">D</span>on_submit → insert_row</div>
+            <div class="block-item"><span class="grip">⋮⋮</span><span class="bi">D</span>load_list_from_db</div>
+
+            <div class="section-lbl">Auth</div>
+            <div class="block-item"><span class="grip">⋮⋮</span><span class="bi">A</span>require_login</div>
+            <div class="block-item"><span class="grip">⋮⋮</span><span class="bi">A</span>sign_out</div>
+
+            <div class="section-lbl">AI</div>
+            <div class="block-item"><span class="grip">⋮⋮</span><span class="bi">✦</span>complete_with_llm</div>
+          </div>
+
+          <!-- drag line -->
+          <svg style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none" preserveAspectRatio="none" viewBox="0 0 1100 720">
+            <defs>
+              <marker id="ahead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M0,0 L10,5 L0,10 Z" fill="#4f7cf7"></path>
+              </marker>
+            </defs>
+            <path d="M 820,140 C 700,200 580,300 510,450" stroke="#4f7cf7" stroke-width="1.5" stroke-dasharray="5 4" fill="none" marker-end="url(#ahead)"></path>
+          </svg>
+        </div>
+      </div>
+
+      <aside class="panel panel-right">
+        <div class="panel-head">
+          <span class="panel-title">Block · stripe_checkout</span>
+        </div>
+        <div class="props">
+          <div class="prop-selected">
+            <div>
+              <div class="name">stripe_checkout</div>
+              <div class="kind">bound to · Pro.Upgrade</div>
+            </div>
+          </div>
+
+          <div class="prop-group">
+            <h5>Trigger</h5>
+            <div class="prop-seg">
+              <span class="on">onClick</span><span>onSubmit</span><span>onView</span>
+            </div>
+          </div>
+
+          <div class="prop-group">
+            <h5>Product</h5>
+            <div class="field"><span class="lbl">plan</span><div class="input"><input value="price_pro_monthly"></div></div>
+            <div class="field"><span class="lbl">qty</span><div class="input"><input value="1"></div></div>
+          </div>
+
+          <div class="prop-group">
+            <h5>After checkout</h5>
+            <div class="field"><span class="lbl">go to</span><div class="input"><input value="/welcome"></div></div>
+          </div>
+
+          <div class="prop-group">
+            <h5>Writes to your repo</h5>
+            <div class="gen-card" style="padding:10px">
+              <div class="tag">API</div>
+              <div class="name" style="font-size:12px">/api/checkout.ts</div>
+              <div class="exp">Plain function. Inspect, edit, delete — your code.</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- ==================== BACKEND · GRAPH ===================== -->
+  <!-- ========================================================== -->
+  <div class="view" data-view="graph">
+    <div class="workspace">
+      <div class="rail">
+        <button class="tool"><svg><use href="#i-cursor"></use></svg></button>
+        <button class="tool"><svg><use href="#i-move"></use></svg></button>
+        <span class="sep"></span>
+        <button class="tool"><svg><use href="#i-comp"></use></svg></button>
+        <button class="tool"><svg><use href="#i-layers"></use></svg></button>
+        <button class="tool active"><svg><use href="#i-db"></use></svg></button>
+        <button class="tool"><svg><use href="#i-code"></use></svg></button>
+        <button class="tool"><svg><use href="#i-plug"></use></svg></button>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-head">
+          <span class="panel-title">Nodes</span>
+          <span class="panel-badge">11 live</span>
+        </div>
+        <div class="tree" style="padding-top:8px">
+          <div class="tree-section-title" style="padding-top:4px">Data · tables</div>
+          <div class="tree-row"><span class="ico" style="color:var(--pos)"><svg><use href="#i-db"></use></svg></span>users <span style="margin-left:auto;font-family:var(--font-mono);font-size:10px;color:var(--ink-4)">12.4k</span></div>
+          <div class="tree-row"><span class="ico" style="color:var(--pos)"><svg><use href="#i-db"></use></svg></span>orders <span style="margin-left:auto;font-family:var(--font-mono);font-size:10px;color:var(--ink-4)">1.2k</span></div>
+
+          <div class="tree-section-title">Services</div>
+          <div class="tree-row"><span class="ico" style="color:#b7c5ff"><svg><use href="#i-lock"></use></svg></span>Auth config</div>
+          <div class="tree-row"><span class="ico" style="color:var(--pos)"><svg><use href="#i-dollar"></use></svg></span>Payments · Stripe</div>
+          <div class="tree-row"><span class="ico"><svg><use href="#i-mail"></use></svg></span>Send email</div>
+          <div class="tree-row"><span class="ico" style="color:#d58ff5"><svg><use href="#i-spark"></use></svg></span>AI · summarize</div>
+
+          <div class="tree-section-title">Transforms</div>
+          <div class="tree-row sel"><span class="ico"><svg><use href="#i-bolt"></use></svg></span>group + aggregate</div>
+          <div class="tree-row"><span class="ico"><svg><use href="#i-lock"></use></svg></span>require login</div>
+
+          <div class="tree-section-title">UI</div>
+          <div class="tree-row"><span class="ico" style="color:var(--warn)"><svg><use href="#i-comp"></use></svg></span>&lt;StatCard/&gt;</div>
+          <div class="tree-row"><span class="ico" style="color:var(--warn)"><svg><use href="#i-chart"></use></svg></span>&lt;Chart/&gt;</div>
+
+          <div class="tree-section-title">Pages</div>
+          <div class="tree-row"><span class="ico" style="color:var(--neg)"><svg><use href="#i-file"></use></svg></span>Dashboard.jsx</div>
+        </div>
+      </aside>
+
+      <div class="center">
+        <div class="graph">
+         <div class="graph-inner">
+          <svg class="wires" width="1420" height="760" style="position:absolute;inset:0">
+            <!-- users.email → Auth.user_table -->
+            <path d="M 260,195 C 350,195 350,420 440,420" class="active"></path>
+            <!-- orders.user_id → group+aggregate.input -->
+            <path d="M 260,450 C 350,450 350,520 440,520" class="active"></path>
+            <!-- orders.amount → Payments (left side dot into body for visual) -->
+            <path d="M 260,480 C 150,480 150,640 40,640"></path>
+            <!-- Auth.session → require login -->
+            <path d="M 660,450 C 730,450 730,430 800,430"></path>
+            <!-- Auth.user → StatCard.value -->
+            <path d="M 660,480 C 740,480 740,190 820,190" class="active"></path>
+            <!-- group+aggregate.series → Chart.series -->
+            <path d="M 660,615 C 740,615 740,570 820,570" class="active"></path>
+            <!-- Payments.events → Send email.event -->
+            <path d="M 250,655 C 400,655 450,670 580,670" class="active"></path>
+            <!-- require login.allowed → Dashboard.guard -->
+            <path d="M 980,460 C 1080,460 1080,360 1180,360"></path>
+            <!-- StatCard → Dashboard.children -->
+            <path d="M 980,220 C 1080,220 1080,315 1180,315" class="active"></path>
+            <!-- Chart → Dashboard.children -->
+            <path d="M 980,600 C 1080,600 1080,315 1180,315" class="active"></path>
+            <!-- Send email.sent → AI.context -->
+            <path d="M 790,705 C 850,705 850,655 900,655"></path>
+          </svg>
+
+          <!-- Group frame: DATA -->
+          <div class="group-frame" style="left:8px;top:70px;width:280px;height:475px">
+            <span class="label">data layer</span>
+          </div>
+          <!-- Group frame: BACKEND -->
+          <div class="group-frame" style="left:430px;top:250px;width:560px;height:315px">
+            <span class="label">backend services</span>
+          </div>
+
+          <!-- ============= DATABASE TABLE: users ============= -->
+          <div class="node table" style="left:30px;top:100px">
+            <div class="node-head">
+              <span>users <span style="color:var(--ink-4);font-weight:400;margin-left:4px">· table</span></span>
+              <span class="kind">db</span>
+            </div>
+            <div class="thead">
+              <span>column</span><span>type</span><span></span>
+            </div>
+            <div class="trow">
+              <span>id</span><span class="t">uuid</span><span class="k pk" title="primary key">PK</span>
+              <span class="dot"></span>
+            </div>
+            <div class="trow">
+              <span>email</span><span class="t">text</span><span class="k un" title="unique">UQ</span>
+              <span class="dot live"></span>
+            </div>
+            <div class="trow">
+              <span>name</span><span class="t">text</span><span></span>
+              <span class="dot"></span>
+            </div>
+            <div class="trow">
+              <span>avatar_url</span><span class="t">text?</span><span></span>
+              <span class="dot"></span>
+            </div>
+            <div class="trow">
+              <span>created_at</span><span class="t">timestamp</span><span></span>
+              <span class="dot"></span>
+            </div>
+            <div class="tfoot">
+              <span>rows</span><span class="n">12,453</span>
+            </div>
+          </div>
+
+          <!-- ============= DATABASE TABLE: orders ============= -->
+          <div class="node table" style="left:30px;top:355px">
+            <div class="node-head">
+              <span>orders <span style="color:var(--ink-4);font-weight:400;margin-left:4px">· table</span></span>
+              <span class="kind">db</span>
+            </div>
+            <div class="thead">
+              <span>column</span><span>type</span><span></span>
+            </div>
+            <div class="trow">
+              <span>id</span><span class="t">uuid</span><span class="k pk">PK</span>
+              <span class="dot"></span>
+            </div>
+            <div class="trow">
+              <span>user_id</span><span class="t">uuid</span><span class="k fk" title="foreign key → users.id">FK</span>
+              <span class="dot live"></span>
+            </div>
+            <div class="trow">
+              <span>amount</span><span class="t">numeric</span><span></span>
+              <span class="dot live"></span>
+            </div>
+            <div class="trow">
+              <span>status</span><span class="t">enum</span><span></span>
+              <span class="dot"></span>
+            </div>
+            <div class="trow">
+              <span>created_at</span><span class="t">timestamp</span><span></span>
+              <span class="dot"></span>
+            </div>
+            <div class="tfoot">
+              <span>rows</span><span class="n">1,284</span>
+            </div>
+          </div>
+
+          <!-- ============= AUTH CONFIG ============= -->
+          <div class="node auth" style="left:440px;top:280px;min-width:220px">
+            <div class="node-head">
+              <span>Auth <span style="color:var(--ink-4);font-weight:400;margin-left:4px">· config</span></span>
+              <span class="kind">service</span>
+            </div>
+            <div class="body">
+              <div class="prov"><span><span class="pi">@</span>Email + password</span><span class="on-chip">on</span></div>
+              <div class="prov"><span><span class="pi">G</span>Google</span><span class="on-chip">on</span></div>
+              <div class="prov"><span><span class="pi">gh</span>GitHub</span><span class="off-chip">off</span></div>
+              <div class="prov"><span><span class="pi">✨</span>Magic link</span><span class="off-chip">off</span></div>
+              <div style="height:1px;background:var(--line-1);margin:4px 0"></div>
+              <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink-3)">
+                <span>Session</span><span style="font-family:var(--font-mono);color:var(--ink-1)">cookie · 30d</span>
+              </div>
+            </div>
+            <div class="port in"><span class="dot live"></span>user_table</div>
+            <div class="port out">session <span class="mono">Session</span><span class="dot"></span></div>
+            <div class="port out">user <span class="mono">User</span><span class="dot"></span></div>
+          </div>
+
+          <!-- ============= GROUP + AGGREGATE ============= -->
+          <div class="node xform sel" style="left:440px;top:465px;min-width:220px">
+            <div class="node-head">group + aggregate <span class="kind">transform</span></div>
+            <div class="port in"><span class="dot live"></span>input</div>
+            <div class="port in"><span class="dot"></span>by (date)</div>
+            <div class="port" style="padding:4px 14px;color:var(--ink-3);font-family:var(--font-mono);font-size:10.5px">agg = sum(amount)</div>
+            <div class="port out">series <span class="mono">Series</span><span class="dot live"></span></div>
+          </div>
+
+          <!-- ============= PAYMENTS ============= -->
+          <div class="node pay" style="left:20px;top:585px;min-width:230px">
+            <div class="node-head">
+              <span>Payments <span style="color:var(--ink-4);font-weight:400;margin-left:4px">· Stripe</span></span>
+              <span class="kind">service</span>
+            </div>
+            <div class="body">
+              <div class="plan"><span>Starter</span><span><span class="p">price_...a1</span> · <span class="a">$19</span></span></div>
+              <div class="plan"><span>Pro</span><span><span class="p">price_...b2</span> · <span class="a">$49</span></span></div>
+              <div class="plan"><span>Enterprise</span><span><span class="p">price_...c3</span> · <span class="a">Custom</span></span></div>
+            </div>
+            <div class="port out">events <span class="mono">Webhook</span><span class="dot live"></span></div>
+            <div class="port out">MRR <span class="mono">number</span><span class="dot"></span></div>
+          </div>
+
+          <!-- ============= EMAIL ============= -->
+          <div class="node mail" style="left:580px;top:610px;min-width:210px">
+            <div class="node-head">
+              <span>Send email</span>
+              <span class="kind">trigger</span>
+            </div>
+            <div class="body">
+              <div class="sub">Welcome, {{ user.name }}</div>
+              <div>On: <span style="font-family:var(--font-mono);color:var(--ink-1)">checkout.completed</span></div>
+              <div class="tpl">template: welcome_pro</div>
+            </div>
+            <div class="port in"><span class="dot live"></span>event</div>
+            <div class="port out">sent <span class="mono">boolean</span><span class="dot"></span></div>
+          </div>
+
+          <!-- ============= AI / LLM ============= -->
+          <div class="node ai" style="left:900px;top:590px;min-width:230px">
+            <div class="node-head">
+              <span>AI · summarize</span>
+              <span class="kind">llm</span>
+            </div>
+            <div class="body">
+              <div class="md">claude-haiku · 1024 tok</div>
+              <div class="prompt">"Summarize this week's orders for the founder update — revenue, top customers, churn risks."</div>
+            </div>
+            <div class="port in"><span class="dot"></span>context</div>
+            <div class="port out">text <span class="mono">string</span><span class="dot"></span></div>
+          </div>
+
+          <!-- ============= REQUIRE LOGIN ============= -->
+          <div class="node xform" style="left:800px;top:380px;min-width:180px">
+            <div class="node-head">require login <span class="kind">gate</span></div>
+            <div class="port in"><span class="dot"></span>session</div>
+            <div class="port out">allowed <span class="mono">boolean</span><span class="dot"></span></div>
+          </div>
+
+          <!-- ============= UI: STATCARD ============= -->
+          <div class="node ui" style="left:820px;top:130px">
+            <div class="node-head">&lt;StatCard/&gt; <span class="kind">ui</span></div>
+            <div class="port in"><span class="dot live"></span>value</div>
+            <div class="port in"><span class="dot"></span>label</div>
+            <div class="port" style="padding:4px 14px;color:var(--ink-3);font-family:var(--font-mono);font-size:10.5px">props · delta, icon</div>
+          </div>
+
+          <!-- ============= UI: CHART ============= -->
+          <div class="node ui" style="left:820px;top:510px">
+            <div class="node-head">&lt;Chart/&gt; <span class="kind">ui</span></div>
+            <div class="port in"><span class="dot live"></span>series</div>
+            <div class="port in"><span class="dot"></span>x-axis</div>
+          </div>
+
+          <!-- ============= PAGE ============= -->
+          <div class="node page" style="left:1180px;top:270px;min-width:190px">
+            <div class="node-head">Dashboard.jsx <span class="kind">page</span></div>
+            <div class="port in"><span class="dot live"></span>children</div>
+            <div class="port in"><span class="dot"></span>layout</div>
+            <div class="port in"><span class="dot"></span>guard</div>
+            <div class="port" style="padding:6px 14px;color:var(--ink-3);font-family:var(--font-mono);font-size:10.5px;border-top:1px solid var(--line-1);background:var(--bg-2)">route · /dashboard</div>
+          </div>
+
+         </div>
+          <div class="graph-toolbar">
+            <button>＋ Source</button>
+            <button>＋ Transform</button>
+            <button>＋ Service</button>
+            <button>＋ UI</button>
+            <button>＋ Page</button>
+            <button class="primary">Run ▶</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel panel-right">
+        <div class="panel-head">
+          <span class="panel-title">Node · group + aggregate</span>
+        </div>
+        <div class="props">
+          <div class="prop-group">
+            <h5>Inputs</h5>
+            <div class="field"><span class="lbl">input</span><div class="input" style="color:var(--pos)"><input value="orders.rows"></div></div>
+            <div class="field"><span class="lbl">by</span><div class="input"><input value="date"></div></div>
+          </div>
+          <div class="prop-group">
+            <h5>Aggregation</h5>
+            <div class="prop-seg">
+              <span>count</span><span class="on">sum</span><span>avg</span><span>max</span>
+            </div>
+            <div class="field" style="margin-top:6px"><span class="lbl">field</span><div class="input"><input value="amount"></div></div>
+          </div>
+          <div class="prop-group">
+            <h5>Compiles to</h5>
+            <div class="input" style="font-family:var(--font-mono);font-size:10.5px;height:auto;padding:10px;display:block;line-height:1.6">
+<span style="color:#c792ea">const</span> series = groupBy(orders, <span style="color:#c3e88d">'date'</span>)<br>
+&nbsp;&nbsp;.map(g =&gt; ({ date:g.key, v:sum(g,<span style="color:#c3e88d">'amount'</span>) }))
+            </div>
+          </div>
+          <div class="prop-group">
+            <h5>Preview</h5>
+            <div class="input" style="height:auto;padding:10px;display:block">
+              <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;color:var(--ink-2)"><span>Mar 5</span><span>7,100</span></div>
+              <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;color:var(--ink-2)"><span>Mar 6</span><span>920</span></div>
+              <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;color:var(--ink-2)"><span>Mar 8</span><span>3,600</span></div>
+              <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;color:var(--ink-2)"><span>Mar 9</span><span>1,800</span></div>
+              <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;color:var(--ink-2)"><span>Mar 10</span><span>4,200</span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ======= TWEAKS PANEL ======= -->
+<div class="tweaks-panel show" id="tweaks">
+  <h4>Tweaks</h4>
+  <div class="tw-row">
+    <span>Theme</span>
+    <div class="tw-seg" data-tweak="theme">
+      <span data-val="dark" class="">dark</span>
+      <span data-val="light" class="on">light</span>
+    </div>
+  </div>
+  <div class="tw-row">
+    <span>Panel side</span>
+    <div class="tw-seg" data-tweak="panels">
+      <span data-val="classic" class="">classic</span>
+      <span data-val="swap" class="on">swap</span>
+    </div>
+  </div>
+  <div class="tw-row">
+    <span>Density</span>
+    <div class="tw-seg" data-tweak="density">
+      <span data-val="comfy" class="on">comfy</span>
+      <span data-val="compact">compact</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "theme": "dark",
+    "panels": "swap",
+    "density": "comfy"
+  }/*EDITMODE-END*/;
+
+  // View tabs
+  const tabs = document.querySelectorAll('.deck-tab');
+  const views = document.querySelectorAll('.view');
+  function showView(n){
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.view === n));
+    views.forEach(v => v.classList.toggle('active', v.dataset.view === n));
+    try{ localStorage.setItem('atlantic:view', n) }catch(e){}
+  }
+  tabs.forEach(t => t.addEventListener('click', () => showView(t.dataset.view)));
+  try{
+    const s = localStorage.getItem('atlantic:view');
+    if (s) showView(s);
+  }catch(e){}
+
+  // Tweaks
+  function applyTweak(k, v){
+    if (k==='theme') document.body.classList.toggle('light', v==='light');
+    if (k==='panels') document.body.classList.toggle('swap-panels', v==='swap');
+    if (k==='density') document.body.classList.toggle('compact', v==='compact');
+  }
+  function setTweak(k, v){
+    applyTweak(k, v);
+    document.querySelectorAll(`.tw-seg[data-tweak="${k}"] span`).forEach(s => s.classList.toggle('on', s.dataset.val===v));
+    window.parent.postMessage({type:'__edit_mode_set_keys', edits:{[k]:v}}, '*');
+  }
+  Object.entries(TWEAK_DEFAULTS).forEach(([k,v]) => {
+    applyTweak(k,v);
+    document.querySelectorAll(`.tw-seg[data-tweak="${k}"] span`).forEach(s => s.classList.toggle('on', s.dataset.val===v));
+  });
+
+  document.querySelectorAll('.tw-seg').forEach(seg => {
+    seg.addEventListener('click', (e) => {
+      const s = e.target.closest('span'); if (!s) return;
+      setTweak(seg.dataset.tweak, s.dataset.val);
+    });
+  });
+
+  // Theme toggle in menubar
+  document.getElementById('theme-btn').addEventListener('click', () => {
+    const next = document.body.classList.contains('light') ? 'dark' : 'light';
+    setTweak('theme', next);
+  });
+
+  // Edit mode host protocol
+  const tweaksEl = document.getElementById('tweaks');
+  window.addEventListener('message', (ev) => {
+    const d = ev.data || {};
+    if (d.type === '__activate_edit_mode') tweaksEl.classList.add('show');
+    else if (d.type === '__deactivate_edit_mode') tweaksEl.classList.remove('show');
+  });
+  window.parent.postMessage({type:'__edit_mode_available'}, '*');
+</script>
+
+
+</body></html>
