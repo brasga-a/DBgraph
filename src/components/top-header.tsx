@@ -10,7 +10,9 @@ import {
 } from "./ui/breadcrumb";
 import { Button } from "./ui/button";
 import Snapshot from "./snapshot";
-import { Avatar, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+
+import avatarImage from "../../public/avatar-image.jpeg";
 
 export function TopHeader() {
 	return (
@@ -58,10 +60,15 @@ export function TopHeader() {
 				</Button>
 				<Avatar>
 					<AvatarImage
-						src="https://github.com/brasga-a.png"
+						src={avatarImage}
 						alt="Avatar image"
 						className="rounded-lg"
 					/>
+					<AvatarFallback
+						className="rounded-lg text-muted-foreground"
+					>
+						DB
+					</AvatarFallback>
 				</Avatar>
 			</div>
 		</header>
