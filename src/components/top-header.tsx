@@ -9,6 +9,7 @@ import {
 	BreadcrumbSeparator,
 } from "./ui/breadcrumb";
 import { Button } from "./ui/button";
+import Snapshot from "./snapshot";
 
 export function TopHeader() {
 	return (
@@ -36,25 +37,22 @@ export function TopHeader() {
 			{/* Version - Theme - Play */}
 
 			<div className="flex items-center gap-2">
-				<Badge variant="outline" className="gap-2 rounded-md dark:bg-sidebar-accent border-border-2">
-					<div className="relative flex size-1.5">
-						<div className="absolute inline-flex size-1.5 animate-ping rounded-full bg-blue-500 opacity-75 [animation-duration:3000ms]"></div>
-						<div className="relative inline-flex size-1.5 rounded-full bg-blue-500"></div>
-					</div>
-					8f3a2c9
-				</Badge>
-
+				
+				<Snapshot/>
 				<ModeToggle />
 				<Button
 					variant="ghost"
 					size="icon"
 					className="relative rounded-md"
+					title="Share"
 					aria-label="Share"
 				>
 					<Share className="size-3.5" />
 				</Button>
-
-				<Button className="rounded-md" size="sm">
+				<Button variant="outline" className="rounded-md" size="sm">
+					Save
+				</Button>
+				<Button variant="default" className="rounded-md" size="sm">
 					Run
 				</Button>
 			</div>

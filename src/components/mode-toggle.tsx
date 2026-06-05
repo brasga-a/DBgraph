@@ -17,6 +17,7 @@ export function ModeToggle() {
       size="icon"
       className="relative rounded-md"
       onClick={toggleTheme}
+      title="Theme"
       aria-label="Toggle theme"
     >
       <Sun className="absolute size-3.5 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0 " />

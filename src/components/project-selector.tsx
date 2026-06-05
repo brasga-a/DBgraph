@@ -193,9 +193,9 @@ export function ProjectSelector() {
 				{currentProject?.slug ?? "project-name"}
 				<ChevronsUpDown className="size-3" />
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className="min-w-xs p-0" align="start">
-				<DropdownMenuGroup className="mt-1 border-b">
-					<InputGroup className="mb-1 border-none! bg-transparent! px-1.5 ring-0!">
+			<DropdownMenuContent className="w-xs p-0" align="start">
+				<DropdownMenuGroup className="p-2 border-b">
+					<InputGroup className="border-none! bg-transparent! ring-0!">
 						<InputGroupInput
 							ref={projectSearchInputRef}
 							placeholder="Search project..."
@@ -213,11 +213,11 @@ export function ProjectSelector() {
 					</InputGroup>
 				</DropdownMenuGroup>
                 {!query && currentProject && (
-                <DropdownMenuGroup className="px-2 mt-2">
+                <DropdownMenuGroup className="p-2">
                     <DropdownMenuLabel className="text-[11px] text-muted-foreground">
                         CURRENT PROJECT
                     </DropdownMenuLabel>
-                    <div className="bg-blue-500/10 px-2 py-2 text-sm rounded-sm flex justify-between items-center">
+                    <div className="bg-blue-500/10 p-2 text-sm rounded-md flex justify-between items-center">
                         <div className="flex items-center gap-3 px-2">
                             <Network className="size-5.5 text-blue-500" />
                             <div>
@@ -261,7 +261,7 @@ export function ProjectSelector() {
 									}}
 								>
                                     <div className="flex items-center gap-3 px-2">
-                                        <Network className="size-5.5 text-blue-500/90" />
+                                        <Network className="size-5 text-blue-500/90" />
                                         <div className="min-w-0">
                                             <div className="truncate">{project.slug}</div>
                                             <div className="truncate text-xs text-muted-foreground">
@@ -270,9 +270,9 @@ export function ProjectSelector() {
                                         </div>
                                     </div>
                                     {query && project.id === currentProjectId ? (
-                                        <Badge variant="default" className="text-xs bg-blue-500/20 text-blue-500">
-                                            Current
-                                        </Badge>
+                                        <Badge variant="default" className="text-xs bg-transparent border-blue-400 dark:border-none dark:bg-blue-500/20 text-blue-500">
+											Current
+										</Badge>
                                     ) : (
                                         <ChevronRight className="size-4 text-muted-foreground" />
                                     )}
@@ -293,13 +293,13 @@ export function ProjectSelector() {
 					/>
 				</div>
 				<DropdownMenuGroup className="px-2 my-2">
-					<Button variant="ghost" size="sm" className="w-full rounded-sm justify-start gap-3">
-						<Plus />
+					<Button variant="ghost" size="sm" className="w-full rounded-sm justify-start gap-3 px-2 py-4">
+						<Plus className="size-5 text-muted-foreground" />
 						Create project
 					</Button>
-                    <Button variant="ghost" size="sm" className=" w-full rounded-sm justify-between gap-3">
+                    <Button variant="ghost" size="sm" className=" w-full rounded-sm justify-between gap-3 px-2 py-4">
                         <span className="flex items-center gap-3">
-                            <Folder />
+                            <Folder className="size-5 text-muted-foreground" />
                             Manage projects
                         </span>
                         <ChevronRight className="size-4 text-muted-foreground" />
