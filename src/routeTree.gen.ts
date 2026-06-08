@@ -10,33 +10,110 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PProjectIdRouteImport } from './routes/p/$projectId'
+import { Route as PProjectIdSketchRouteImport } from './routes/p/$projectId/sketch'
+import { Route as PProjectIdSchemaRouteImport } from './routes/p/$projectId/schema'
+import { Route as PProjectIdProfileRouteImport } from './routes/p/$projectId/profile'
+import { Route as PProjectIdHistoryRouteImport } from './routes/p/$projectId/history'
+import { Route as PProjectIdDataRouteImport } from './routes/p/$projectId/data'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PProjectIdRoute = PProjectIdRouteImport.update({
+  id: '/p/$projectId',
+  path: '/p/$projectId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PProjectIdSketchRoute = PProjectIdSketchRouteImport.update({
+  id: '/sketch',
+  path: '/sketch',
+  getParentRoute: () => PProjectIdRoute,
+} as any)
+const PProjectIdSchemaRoute = PProjectIdSchemaRouteImport.update({
+  id: '/schema',
+  path: '/schema',
+  getParentRoute: () => PProjectIdRoute,
+} as any)
+const PProjectIdProfileRoute = PProjectIdProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => PProjectIdRoute,
+} as any)
+const PProjectIdHistoryRoute = PProjectIdHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => PProjectIdRoute,
+} as any)
+const PProjectIdDataRoute = PProjectIdDataRouteImport.update({
+  id: '/data',
+  path: '/data',
+  getParentRoute: () => PProjectIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/p/$projectId': typeof PProjectIdRouteWithChildren
+  '/p/$projectId/data': typeof PProjectIdDataRoute
+  '/p/$projectId/history': typeof PProjectIdHistoryRoute
+  '/p/$projectId/profile': typeof PProjectIdProfileRoute
+  '/p/$projectId/schema': typeof PProjectIdSchemaRoute
+  '/p/$projectId/sketch': typeof PProjectIdSketchRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/p/$projectId': typeof PProjectIdRouteWithChildren
+  '/p/$projectId/data': typeof PProjectIdDataRoute
+  '/p/$projectId/history': typeof PProjectIdHistoryRoute
+  '/p/$projectId/profile': typeof PProjectIdProfileRoute
+  '/p/$projectId/schema': typeof PProjectIdSchemaRoute
+  '/p/$projectId/sketch': typeof PProjectIdSketchRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/p/$projectId': typeof PProjectIdRouteWithChildren
+  '/p/$projectId/data': typeof PProjectIdDataRoute
+  '/p/$projectId/history': typeof PProjectIdHistoryRoute
+  '/p/$projectId/profile': typeof PProjectIdProfileRoute
+  '/p/$projectId/schema': typeof PProjectIdSchemaRoute
+  '/p/$projectId/sketch': typeof PProjectIdSketchRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/p/$projectId'
+    | '/p/$projectId/data'
+    | '/p/$projectId/history'
+    | '/p/$projectId/profile'
+    | '/p/$projectId/schema'
+    | '/p/$projectId/sketch'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/p/$projectId'
+    | '/p/$projectId/data'
+    | '/p/$projectId/history'
+    | '/p/$projectId/profile'
+    | '/p/$projectId/schema'
+    | '/p/$projectId/sketch'
+  id:
+    | '__root__'
+    | '/'
+    | '/p/$projectId'
+    | '/p/$projectId/data'
+    | '/p/$projectId/history'
+    | '/p/$projectId/profile'
+    | '/p/$projectId/schema'
+    | '/p/$projectId/sketch'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PProjectIdRoute: typeof PProjectIdRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +125,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/p/$projectId': {
+      id: '/p/$projectId'
+      path: '/p/$projectId'
+      fullPath: '/p/$projectId'
+      preLoaderRoute: typeof PProjectIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p/$projectId/sketch': {
+      id: '/p/$projectId/sketch'
+      path: '/sketch'
+      fullPath: '/p/$projectId/sketch'
+      preLoaderRoute: typeof PProjectIdSketchRouteImport
+      parentRoute: typeof PProjectIdRoute
+    }
+    '/p/$projectId/schema': {
+      id: '/p/$projectId/schema'
+      path: '/schema'
+      fullPath: '/p/$projectId/schema'
+      preLoaderRoute: typeof PProjectIdSchemaRouteImport
+      parentRoute: typeof PProjectIdRoute
+    }
+    '/p/$projectId/profile': {
+      id: '/p/$projectId/profile'
+      path: '/profile'
+      fullPath: '/p/$projectId/profile'
+      preLoaderRoute: typeof PProjectIdProfileRouteImport
+      parentRoute: typeof PProjectIdRoute
+    }
+    '/p/$projectId/history': {
+      id: '/p/$projectId/history'
+      path: '/history'
+      fullPath: '/p/$projectId/history'
+      preLoaderRoute: typeof PProjectIdHistoryRouteImport
+      parentRoute: typeof PProjectIdRoute
+    }
+    '/p/$projectId/data': {
+      id: '/p/$projectId/data'
+      path: '/data'
+      fullPath: '/p/$projectId/data'
+      preLoaderRoute: typeof PProjectIdDataRouteImport
+      parentRoute: typeof PProjectIdRoute
+    }
   }
 }
 
+interface PProjectIdRouteChildren {
+  PProjectIdDataRoute: typeof PProjectIdDataRoute
+  PProjectIdHistoryRoute: typeof PProjectIdHistoryRoute
+  PProjectIdProfileRoute: typeof PProjectIdProfileRoute
+  PProjectIdSchemaRoute: typeof PProjectIdSchemaRoute
+  PProjectIdSketchRoute: typeof PProjectIdSketchRoute
+}
+
+const PProjectIdRouteChildren: PProjectIdRouteChildren = {
+  PProjectIdDataRoute: PProjectIdDataRoute,
+  PProjectIdHistoryRoute: PProjectIdHistoryRoute,
+  PProjectIdProfileRoute: PProjectIdProfileRoute,
+  PProjectIdSchemaRoute: PProjectIdSchemaRoute,
+  PProjectIdSketchRoute: PProjectIdSketchRoute,
+}
+
+const PProjectIdRouteWithChildren = PProjectIdRoute._addFileChildren(
+  PProjectIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PProjectIdRoute: PProjectIdRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

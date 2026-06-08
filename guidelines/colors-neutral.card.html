@@ -1,0 +1,30 @@
+<!-- @dsCard group="Colors" viewport="700x180" name="Neutral ramp" subtitle="Pure-gray oklch — surfaces, text, borders" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 20px; background: var(--background); }
+  .row { display: flex; gap: 8px; }
+  .sw { flex: 1; display: flex; flex-direction: column; }
+  .chip { height: 64px; border-radius: var(--radius-md); box-shadow: var(--ring-card); }
+  .name { font: var(--weight-medium) var(--text-xs)/1.4 var(--font-sans); color: var(--foreground); margin-top: 8px; }
+  .val { font: var(--text-2xs)/1.4 var(--font-mono); color: var(--muted-foreground); margin-top: 2px; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="sw"><div class="chip" style="background:var(--gray-0)"></div><div class="name">gray-0</div><div class="val">1.0</div></div>
+    <div class="sw"><div class="chip" style="background:var(--gray-50)"></div><div class="name">gray-50</div><div class="val">.97</div></div>
+    <div class="sw"><div class="chip" style="background:var(--gray-100)"></div><div class="name">gray-100</div><div class="val">.937</div></div>
+    <div class="sw"><div class="chip" style="background:var(--gray-200)"></div><div class="name">gray-200</div><div class="val">.922</div></div>
+    <div class="sw"><div class="chip" style="background:var(--gray-300)"></div><div class="name">gray-300</div><div class="val">.854</div></div>
+    <div class="sw"><div class="chip" style="background:var(--gray-400)"></div><div class="name">gray-400</div><div class="val">.708</div></div>
+    <div class="sw"><div class="chip" style="background:var(--gray-500)"></div><div class="name">gray-500</div><div class="val">.556</div></div>
+    <div class="sw"><div class="chip" style="background:var(--gray-700)"></div><div class="name">gray-700</div><div class="val">.274</div></div>
+    <div class="sw"><div class="chip" style="background:var(--gray-800)"></div><div class="name">gray-800</div><div class="val">.205</div></div>
+    <div class="sw"><div class="chip" style="background:var(--gray-900)"></div><div class="name">gray-900</div><div class="val">.145</div></div>
+  </div>
+</body>
+</html>

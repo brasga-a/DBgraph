@@ -1,0 +1,29 @@
+<!-- @dsCard group="Spacing" viewport="700x170" name="Spacing scale" subtitle="4px base grid — chrome is tight" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 22px 24px; background: var(--background); }
+  .row { display: flex; align-items: flex-end; gap: 16px; }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .bar { background: var(--brand); border-radius: 2px; width: 100%; }
+  .box { display: flex; align-items: flex-end; height: 56px; width: 32px; }
+  .name { font: var(--weight-medium) var(--text-xs)/1 var(--font-sans); color: var(--foreground); }
+  .val { font: var(--text-2xs)/1 var(--font-mono); color: var(--muted-foreground); }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="col"><div class="box"><div class="bar" style="height:4px"></div></div><div class="name">1</div><div class="val">4</div></div>
+    <div class="col"><div class="box"><div class="bar" style="height:8px"></div></div><div class="name">2</div><div class="val">8</div></div>
+    <div class="col"><div class="box"><div class="bar" style="height:12px"></div></div><div class="name">3</div><div class="val">12</div></div>
+    <div class="col"><div class="box"><div class="bar" style="height:14px"></div></div><div class="name">3.5</div><div class="val">14</div></div>
+    <div class="col"><div class="box"><div class="bar" style="height:16px"></div></div><div class="name">4</div><div class="val">16</div></div>
+    <div class="col"><div class="box"><div class="bar" style="height:24px"></div></div><div class="name">6</div><div class="val">24</div></div>
+    <div class="col"><div class="box"><div class="bar" style="height:32px"></div></div><div class="name">8</div><div class="val">32</div></div>
+    <div class="col"><div class="box"><div class="bar" style="height:48px"></div></div><div class="name">12</div><div class="val">48</div></div>
+  </div>
+</body>
+</html>

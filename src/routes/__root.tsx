@@ -1,4 +1,4 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Scripts, createRootRoute, Link } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
@@ -41,7 +41,25 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: NotFound,
 })
+
+function NotFound() {
+  return (
+    <div className="flex h-screen w-screen flex-col items-center justify-center gap-2 bg-background text-foreground">
+      <span className="font-mono text-xs font-medium tracking-widest text-muted-foreground uppercase">404</span>
+      <h1 className="text-2xl font-semibold tracking-tight">Page not found</h1>
+      <p className="text-sm text-muted-foreground">The page you're looking for doesn't exist.</p>
+      <Link
+        to="/p/$projectId/sketch"
+        params={{ projectId: 'agile-nebula-8291' }}
+        className="mt-2 text-sm text-primary underline underline-offset-4"
+      >
+        Go home
+      </Link>
+    </div>
+  )
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (

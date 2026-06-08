@@ -207,14 +207,13 @@ export function ProjectSelector() {
 							<Search />
 						</InputGroupAddon>
 						<InputGroupAddon align="inline-end">
-							<Kbd>⌘</Kbd>
 							<Kbd>Ctrl + K</Kbd>
 						</InputGroupAddon>
 					</InputGroup>
 				</DropdownMenuGroup>
                 {!query && currentProject && (
                 <DropdownMenuGroup className="p-2">
-                    <DropdownMenuLabel className="text-[11px] text-muted-foreground">
+                    <DropdownMenuLabel className="font-mono text-muted-foreground/75">
                         CURRENT PROJECT
                     </DropdownMenuLabel>
                     <div className="bg-blue-500/10 p-2 text-sm rounded-md flex justify-between items-center">
@@ -246,7 +245,7 @@ export function ProjectSelector() {
 						className="max-h-[380px] overflow-y-auto px-2 py-2 border-b"
 						onScroll={(event) => updateProjectListGradient(event.currentTarget)}
 					>
-                        <DropdownMenuLabel className="text-[11px] text-muted-foreground">
+                        <DropdownMenuLabel className="font-mono text-muted-foreground/75">
                             {query ? "SEARCH RESULTS" : "RECENT PROJECTS"}
                         </DropdownMenuLabel>
 						{displayedProjects.length > 0 ? (

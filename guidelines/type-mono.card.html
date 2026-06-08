@@ -1,0 +1,28 @@
+<!-- @dsCard group="Type" viewport="700x190" name="Geist Mono — code & data" subtitle="Hashes, types, IDs, prices — tabular figures" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 22px 24px; background: var(--background); color: var(--foreground); font-family: var(--font-mono); }
+  .big { font-size: 26px; letter-spacing: -0.01em; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 28px; margin-top: 16px; font-size: var(--text-sm); }
+  .grid div { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .k { color: var(--muted-foreground); }
+  .v { color: var(--foreground); }
+  .blue { color: var(--brand); }
+</style>
+</head>
+<body>
+  <div class="big">8f3a2c9 · uuid · $1,284.00</div>
+  <div class="grid">
+    <div><span class="k">revision</span><span class="v">8f3a2c9</span></div>
+    <div><span class="k">col type</span><span class="v">timestamp</span></div>
+    <div><span class="k">price id</span><span class="v">price_…b2</span></div>
+    <div><span class="k">fk</span><span class="v blue">user_id → users.id</span></div>
+    <div><span class="k">rows</span><span class="v">12,453</span></div>
+    <div><span class="k">version</span><span class="v">0.1.0</span></div>
+  </div>
+</body>
+</html>

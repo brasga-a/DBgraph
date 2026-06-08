@@ -1,0 +1,58 @@
+<!-- @dsCard group="Brand" viewport="700x340" name="Table node motif" subtitle="The signature canvas object — a schema table" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 0; height: 340px;
+    background:
+      radial-gradient(circle at 1px 1px, color-mix(in oklch, var(--foreground) 8%, transparent) 1px, transparent 0) 0 0 / 22px 22px,
+      var(--background);
+    display: flex; align-items: center; justify-content: center; gap: 40px; font-family: var(--font-sans); }
+  .node { width: 230px; background: var(--card); border: 1px solid var(--border-2);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-node); overflow: hidden; }
+  .head { display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 8px 12px; border-bottom: 1px solid var(--border);
+    font: 500 var(--text-sm)/1 var(--font-sans); color: var(--foreground);
+    background: color-mix(in oklch, var(--brand) 6%, transparent); }
+  .head .sub { color: var(--muted-foreground); font-weight: 400; }
+  .head .kind { font: var(--text-2xs)/1 var(--font-mono); text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--muted-foreground); }
+  .thead, .trow { display: grid; grid-template-columns: 1fr 72px 20px; gap: 8px; align-items: center; }
+  .thead { padding: 5px 14px; border-bottom: 1px solid var(--border);
+    font: var(--text-2xs)/1 var(--font-mono); text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--muted-foreground); }
+  .trow { padding: 7px 14px; border-bottom: 1px solid var(--border); font: var(--text-xs)/1 var(--font-sans); color: var(--foreground); position: relative; }
+  .trow:last-of-type { border-bottom: none; }
+  .trow .t { font: var(--text-2xs)/1 var(--font-mono); color: var(--muted-foreground); }
+  .k { font: 600 9px/1 var(--font-mono); display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 16px; border-radius: 3px; }
+  .k.pk { background: color-mix(in oklch, var(--amber-500) 20%, transparent); color: var(--amber-500); }
+  .k.fk { background: color-mix(in oklch, var(--brand) 20%, transparent); color: var(--brand); }
+  .k.uq { background: color-mix(in oklch, var(--green-500) 20%, transparent); color: var(--green-500); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--card); border: 1.5px solid var(--border-3); position: absolute; right: -5px; top: 50%; transform: translateY(-50%); }
+  .dot.live { background: var(--green-500); border-color: var(--green-500); }
+  .foot { display: flex; justify-content: space-between; padding: 6px 14px; background: var(--muted); border-top: 1px solid var(--border); font: var(--text-2xs)/1 var(--font-sans); color: var(--muted-foreground); }
+  .foot .n { font-family: var(--font-mono); }
+</style>
+</head>
+<body>
+  <div class="node">
+    <div class="head"><span>users <span class="sub">· table</span></span><span class="kind">db</span></div>
+    <div class="thead"><span>column</span><span>type</span><span></span></div>
+    <div class="trow"><span>id</span><span class="t">uuid</span><span class="k pk">PK</span><span class="dot"></span></div>
+    <div class="trow"><span>email</span><span class="t">text</span><span class="k uq">UQ</span><span class="dot live"></span></div>
+    <div class="trow"><span>name</span><span class="t">text</span><span></span><span class="dot"></span></div>
+    <div class="trow"><span>created_at</span><span class="t">timestamp</span><span></span><span class="dot"></span></div>
+    <div class="foot"><span>rows</span><span class="n">12,453</span></div>
+  </div>
+
+  <div class="node">
+    <div class="head"><span>orders <span class="sub">· table</span></span><span class="kind">db</span></div>
+    <div class="thead"><span>column</span><span>type</span><span></span></div>
+    <div class="trow"><span>id</span><span class="t">uuid</span><span class="k pk">PK</span><span class="dot"></span></div>
+    <div class="trow"><span>user_id</span><span class="t">uuid</span><span class="k fk">FK</span><span class="dot live"></span></div>
+    <div class="trow"><span>amount</span><span class="t">numeric</span><span></span><span class="dot live"></span></div>
+    <div class="trow"><span>status</span><span class="t">enum</span><span></span><span class="dot"></span></div>
+    <div class="foot"><span>rows</span><span class="n">1,284</span></div>
+  </div>
+</body>
+</html>

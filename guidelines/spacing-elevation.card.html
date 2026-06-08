@@ -1,0 +1,26 @@
+<!-- @dsCard group="Spacing" viewport="700x190" name="Elevation" subtitle="Hairline borders first; shadow only on floating surfaces" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 26px 24px; background: var(--muted); }
+  .row { display: flex; gap: 20px; }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 11px; flex: 1; }
+  .box { width: 100%; height: 70px; background: var(--card); border-radius: var(--radius-lg); }
+  .ring { box-shadow: var(--ring-card); }
+  .name { font: var(--weight-medium) var(--text-xs)/1 var(--font-sans); color: var(--foreground); }
+  .val { font: var(--text-2xs)/1.3 var(--font-mono); color: var(--muted-foreground); text-align: center; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="col"><div class="box ring"></div><div class="name">ring-card</div><div class="val">cards · inset 1px</div></div>
+    <div class="col"><div class="box" style="box-shadow:var(--shadow-sm)"></div><div class="name">sm</div><div class="val">raised</div></div>
+    <div class="col"><div class="box" style="box-shadow:var(--shadow-node)"></div><div class="name">node</div><div class="val">canvas nodes</div></div>
+    <div class="col"><div class="box" style="box-shadow:var(--shadow-popover)"></div><div class="name">popover</div><div class="val">menus</div></div>
+    <div class="col"><div class="box" style="box-shadow:var(--shadow-dialog)"></div><div class="name">dialog</div><div class="val">modals</div></div>
+  </div>
+</body>
+</html>

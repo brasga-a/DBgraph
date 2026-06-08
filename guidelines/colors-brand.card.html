@@ -1,0 +1,27 @@
+<!-- @dsCard group="Colors" viewport="700x180" name="Brand accent — blue" subtitle="Icons, live dot, selected nodes, FK links, links" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 20px; background: var(--background); }
+  .row { display: flex; gap: 10px; }
+  .sw { flex: 1; display: flex; flex-direction: column; }
+  .chip { height: 64px; border-radius: var(--radius-md); box-shadow: var(--ring-card); }
+  .name { font: var(--weight-medium) var(--text-sm)/1.4 var(--font-sans); color: var(--foreground); margin-top: 8px; }
+  .val { font: var(--text-2xs)/1.4 var(--font-mono); color: var(--muted-foreground); margin-top: 2px; }
+  .star { outline: 2px solid var(--brand); outline-offset: 2px; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="sw"><div class="chip" style="background:var(--blue-300)"></div><div class="name">blue-300</div><div class="val">.809 .105 252</div></div>
+    <div class="sw"><div class="chip" style="background:var(--blue-400)"></div><div class="name">blue-400</div><div class="val">.707 .165 255</div></div>
+    <div class="sw"><div class="chip star" style="background:var(--blue-500)"></div><div class="name">blue-500 · accent</div><div class="val">.623 .214 260</div></div>
+    <div class="sw"><div class="chip" style="background:var(--blue-600)"></div><div class="name">blue-600</div><div class="val">.546 .245 263</div></div>
+    <div class="sw"><div class="chip" style="background:var(--blue-700)"></div><div class="name">blue-700 · primary</div><div class="val">.488 .243 264</div></div>
+    <div class="sw"><div class="chip" style="background:var(--blue-800)"></div><div class="name">blue-800</div><div class="val">.424 .199 266</div></div>
+  </div>
+</body>
+</html>

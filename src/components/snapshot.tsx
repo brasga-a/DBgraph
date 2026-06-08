@@ -69,7 +69,7 @@ export default function Snapshot() {
 			>
 				<DropdownMenuGroup className="space-y-1 p-2">
 
-                    <DropdownMenuLabel>
+                    <DropdownMenuLabel className=" font-mono text-muted-foreground/75">
                         RECENT SNAPSHOTS
                     </DropdownMenuLabel>
 

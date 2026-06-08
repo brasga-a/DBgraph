@@ -1,0 +1,40 @@
+<!-- @dsCard group="Colors" viewport="700x200" name="Semantic surfaces — light & dark" subtitle="The same aliases resolve per theme" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; font-family: var(--font-sans); }
+  .pane { padding: 18px 20px; background: var(--background); color: var(--foreground); }
+  .lbl { font: var(--weight-medium) var(--text-2xs)/1 var(--font-mono); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 12px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tok { display: flex; align-items: center; gap: 8px; font: var(--text-xs)/1.2 var(--font-sans); color: var(--foreground); }
+  .chip { width: 22px; height: 22px; border-radius: 5px; border: 1px solid var(--border-2); flex: none; }
+</style>
+</head>
+<body>
+  <div class="pane">
+    <div class="lbl">Light</div>
+    <div class="grid">
+      <div class="tok"><span class="chip" style="background:var(--background)"></span>background</div>
+      <div class="tok"><span class="chip" style="background:var(--card)"></span>card</div>
+      <div class="tok"><span class="chip" style="background:var(--muted)"></span>muted</div>
+      <div class="tok"><span class="chip" style="background:var(--accent)"></span>accent</div>
+      <div class="tok"><span class="chip" style="background:var(--primary)"></span>primary</div>
+      <div class="tok"><span class="chip" style="background:var(--border)"></span>border</div>
+    </div>
+  </div>
+  <div class="pane dark">
+    <div class="lbl">Dark</div>
+    <div class="grid">
+      <div class="tok"><span class="chip" style="background:var(--background)"></span>background</div>
+      <div class="tok"><span class="chip" style="background:var(--card)"></span>card</div>
+      <div class="tok"><span class="chip" style="background:var(--muted)"></span>muted</div>
+      <div class="tok"><span class="chip" style="background:var(--accent)"></span>accent</div>
+      <div class="tok"><span class="chip" style="background:var(--primary)"></span>primary</div>
+      <div class="tok"><span class="chip" style="background:var(--border)"></span>border</div>
+    </div>
+  </div>
+</body>
+</html>

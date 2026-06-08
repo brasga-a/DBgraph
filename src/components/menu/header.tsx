@@ -1,20 +1,21 @@
-import { Database, Share } from "lucide-react";
-import { ModeToggle } from "./mode-toggle";
-import { ProjectSelector } from "./project-selector";
-import { Badge } from "./ui/badge";
+import { Database, Share, Share2 } from "lucide-react";
+import { ModeToggle } from "../mode-toggle";
+import { ProjectSelector } from "../project-selector";
+import { Badge } from "../ui/badge";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
 	BreadcrumbList,
 	BreadcrumbSeparator,
-} from "./ui/breadcrumb";
-import { Button } from "./ui/button";
-import Snapshot from "./snapshot";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+} from "../ui/breadcrumb";
+import { Button } from "../ui/button";
+import Snapshot from "../snapshot";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-import avatarImage from "../../public/avatar-image.jpeg";
 
-export function TopHeader() {
+import UserDropdown from "../user-dropdown";
+
+export function Header() {
 	return (
 		<header className="relative z-10 flex h-12 shrink-0 items-center justify-between border-b bg-sidebar px-4">
 			<div className="flex items-center gap-4">
@@ -50,7 +51,7 @@ export function TopHeader() {
 					title="Share"
 					aria-label="Share"
 				>
-					<Share className="size-3.5" />
+					<Share2 className="size-3.5" />
 				</Button>
 				<Button variant="outline" className="rounded-md" size="sm">
 					Save
@@ -58,18 +59,7 @@ export function TopHeader() {
 				<Button variant="default" className="rounded-md" size="sm">
 					Run
 				</Button>
-				<Avatar>
-					<AvatarImage
-						src={avatarImage}
-						alt="Avatar image"
-						className="rounded-lg"
-					/>
-					<AvatarFallback
-						className="rounded-lg text-muted-foreground"
-					>
-						DB
-					</AvatarFallback>
-				</Avatar>
+				<UserDropdown/>
 			</div>
 		</header>
 	);
